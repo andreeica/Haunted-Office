@@ -86,10 +86,11 @@
       <h2 class="team-title">💾 Dark Data Keepers</h2>
       <p class="team-role">Backend Development</p>
       <div class="team-members">
-        <div class="member-card">
+        <div class="member-card" data-name="pavel-croitor" data-image="IMG/FB_IMG_1761571668385.jpg" style="cursor: pointer;">
           <div class="eyes"></div>
-          <img src="https://picsum.photos/150/150?random=7" alt="Pavel Croit">
+          <img src="https://picsum.photos/150/150?random=7" alt="Pavel Croitor">
           <h3>Pavel Croitor</h3>
+          <p style="font-size: 0.9rem; color: #ff6600; margin-top: 0.5rem;">👆 Click to learn more!</p>
         </div>
         <div class="member-card">
           <div class="eyes"></div>
@@ -150,6 +151,19 @@
   <footer>
     <p>© 2025 Haunted Office. Beware of bugs... 🪳👻</p>
   </footer>
+
+  <!-- Modal -->
+  <div id="pavelModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Pavel Croitor</h2>
+      <img src="IMG/FB_IMG_1761571668385.jpg" alt="Pavel Croitor" id="modalImage">
+      <p>Backend Developer | Dark Data Keeper</p>
+      <audio id="modalAudio" autoplay loop>
+        <source src="" type="audio/mpeg">
+      </audio>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

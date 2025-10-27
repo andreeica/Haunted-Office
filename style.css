@@ -294,6 +294,20 @@ body {
   cursor: pointer;
 }
 
+.member-card[data-name="pavel-croitor"] {
+  animation: specialPulse 3s ease-in-out infinite;
+  border: 2px solid #ff6600;
+}
+
+@keyframes specialPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 102, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 102, 0, 0.8);
+  }
+}
+
 .member-card:hover {
   transform: translateY(-10px) scale(1.05);
   box-shadow: 
@@ -384,6 +398,106 @@ footer p {
   letter-spacing: 0.5px;
 }
 
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.95);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal.active {
+  display: block;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #1a0033 0%, #0a0a0a 100%);
+  margin: 5% auto;
+  padding: 3rem;
+  border: 3px solid #ff6600;
+  border-radius: 30px;
+  width: 90%;
+  max-width: 800px;
+  position: relative;
+  text-align: center;
+  box-shadow: 
+    0 0 50px rgba(255, 102, 0, 0.5),
+    inset 0 0 50px rgba(138, 0, 255, 0.3);
+  animation: modalAppear 0.5s ease-out;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-content h2 {
+  font-family: 'Pirata One', cursive;
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: #ff6600;
+  text-shadow: 0 0 20px rgba(255, 102, 0, 0.8);
+  margin-bottom: 1rem;
+  letter-spacing: 2px;
+}
+
+.modal-content p {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  font-weight: 400;
+  color: #b088ff;
+  margin: 1rem 0;
+  text-shadow: 0 0 10px rgba(176, 136, 255, 0.5);
+}
+
+.modal-content img {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 20px;
+  border: 4px solid #ff6600;
+  box-shadow: 0 0 40px rgba(255, 102, 0, 0.6);
+  margin: 1.5rem auto;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.modal-content img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 60px rgba(0, 255, 0, 0.6);
+  border-color: #00ff00;
+}
+
+.close {
+  color: #ff6600;
+  font-size: 3rem;
+  font-weight: bold;
+  position: absolute;
+  right: 2rem;
+  top: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 20px rgba(255, 102, 0, 0.8);
+}
+
+.close:hover,
+.close:focus {
+  color: #00ff00;
+  text-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+  transform: scale(1.2) rotate(90deg);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .team-members {
@@ -398,5 +512,17 @@ footer p {
   
   .ghost, .bat {
     display: none;
+  }
+
+  .modal-content {
+    margin: 10% auto;
+    padding: 2rem;
+    width: 95%;
+  }
+
+  .close {
+    right: 1rem;
+    top: 1rem;
+    font-size: 2.5rem;
   }
 }

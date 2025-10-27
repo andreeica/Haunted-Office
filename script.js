@@ -142,12 +142,116 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // Get modal elements
+  const modal = document.getElementById('pavelModal');
+  const closeBtn = document.querySelector('.close');
+  const audio = document.getElementById('modalAudio');
+
   // Random sparkle effect on click
   document.addEventListener('click', function(e) {
-    if (e.target.closest('.member-card')) {
+    const memberCard = e.target.closest('.member-card');
+    if (memberCard) {
       createSparkle(e.clientX, e.clientY);
+      
+      // Check if this is Pavel Croitor's card
+      if (memberCard.getAttribute('data-name') === 'pavel-croitor') {
+        const imagePath = memberCard.getAttribute('data-image');
+        if (imagePath) {
+          // Show modal
+          modal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+          
+          // Play music
+          playAwesomeMusic();
+          
+          console.log('Opening Pavel\'s modal with image:', imagePath);
+        }
+      }
     }
   });
+
+  // Close modal when clicking X
+  closeBtn.addEventListener('click', function() {
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    stopMusic();
+  });
+
+  // Close modal when clicking outside
+  window.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      stopMusic();
+    }
+  });
+
+  // Play awesome music using Web Audio API
+  let audioContext;
+  
+  function playAwesomeMusic() {
+    try {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      // Epic opening chord
+      setTimeout(() => playNote(261.63, 0.2, 0.3, 'sine'), 0);      // C4
+      setTimeout(() => playNote(329.63, 0.2, 0.3, 'sine'), 0);      // E4
+      setTimeout(() => playNote(392.00, 0.2, 0.3, 'sine'), 0);      // G4
+      
+      // Haunting melody
+      setTimeout(() => playNote(523.25, 0.15, 0.5, 'triangle'), 300);
+      setTimeout(() => playNote(659.25, 0.15, 0.5, 'triangle'), 700);
+      setTimeout(() => playNote(783.99, 0.15, 0.5, 'triangle'), 1000);
+      setTimeout(() => playNote(523.25, 0.15, 0.5, 'triangle'), 1300);
+      setTimeout(() => playNote(440.00, 0.15, 0.5, 'triangle'), 1600);
+      setTimeout(() => playNote(392.00, 0.15, 0.5, 'triangle'), 1900);
+      
+      // Spooky bass
+      setTimeout(() => playNote(130.81, 0.18, 1.0, 'square'), 500);
+      setTimeout(() => playNote(98.00, 0.18, 1.0, 'square'), 1000);
+      
+      // Atmospheric pad
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => playNote(220 + i * 20, 0.1, 2.0, 'sine'), 2000 + i * 200);
+      }
+      
+      console.log('🎵 Awesome music playing!');
+      
+    } catch (error) {
+      console.log('Could not play music:', error);
+    }
+  }
+
+  function playNote(frequency, volume, duration, type) {
+    try {
+      const osc = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      osc.type = type;
+      osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+      
+      osc.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      osc.start();
+      osc.stop(audioContext.currentTime + duration);
+    } catch (error) {
+      console.log('Note error:', error);
+    }
+  }
+
+  function stopMusic() {
+    if (audioContext) {
+      audioContext.close();
+      audioContext = null;
+    }
+  }
 
   function createSparkle(x, y) {
     const sparkle = document.createElement('div');
