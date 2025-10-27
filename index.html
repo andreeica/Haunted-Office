@@ -1,45 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Haunted Office 👻</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Welcome to the Haunted Office 🎃</h1>
-    <p>Dare to meet our spooky team...</p>
+  <!-- Fog Overlay -->
+  <div class="fog-overlay"></div>
+  
+  <!-- Floating Ghosts -->
+  <div class="ghost ghost1">👻</div>
+  <div class="ghost ghost2">👻</div>
+  <div class="ghost ghost3">👻</div>
+  
+  <!-- Flying Bats -->
+  <div class="bat bat1">🦇</div>
+  <div class="bat bat2">🦇</div>
+  <div class="bat bat3">🦇</div>
+  
+  <!-- Main Content -->
+  <header class="main-header">
+    <div class="typewriter-container">
+      <h1 id="main-title">Welcome to the Haunted Office</h1>
+    </div>
+    <p id="subtitle">Where code meets the spirit world</p>
+    <button id="reveal-button" class="reveal-button">🔮 Meet the Teams 🔮</button>
   </header>
 
-  <section id="departments">
-    <div class="department">
-      <h2>🕸 Development</h2>
-      <div class="employee">
-        <img src="https://placehold.co/150x150?text=Ghost+Dev" alt="Developer Ghost" />
-        <p>Sergiu “The Code Phantom”</p>
+  <!-- Teams Container -->
+  <div class="teams-container">
+    
+    <!-- QA Team -->
+    <section class="team-section hidden" id="qa-team">
+      <h2 class="team-title">🧪 Inspectors of the Unknown</h2>
+      <p class="team-role">QA Team</p>
+      <div class="team-members">
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=1" alt="Andrei Cebotari">
+          <h3>Andrei Cebotari</h3>
+        </div>
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=2" alt="Nichita Tabac">
+          <h3>Nichita Tabac</h3>
+        </div>
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=3" alt="Denic Nicula">
+          <h3>Denic Nicula</h3>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="department">
-      <h2>🧪 QA & Testing</h2>
-      <div class="employee">
-        <img src="https://placehold.co/150x150?text=QA+Spirit" alt="QA Ghost" />
-        <p>Nichita “The Bug Hunter”</p>
+    <!-- Frontend Team -->
+    <section class="team-section hidden" id="frontend-team">
+      <h2 class="team-title">🕸 Ghostly UI Crafters</h2>
+      <p class="team-role">Frontend Development</p>
+      <div class="team-members">
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=4" alt="Sergiu Filipopolschi">
+          <h3>Sergiu Filipopolschi</h3>
+        </div>
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=5" alt="Mihai Chistol">
+          <h3>Mihai Chistol</h3>
+        </div>
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=6" alt="Ivan Chelish">
+          <h3>Ivan Chelish</h3>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="department">
-      <h2>🩸 Design</h2>
-      <div class="employee">
-        <img src="https://placehold.co/150x150?text=Dark+Designer" alt="Design Ghost" />
-        <p>Alexandrina “Pixel Witch”</p>
+    <!-- Backend Team -->
+    <section class="team-section hidden" id="backend-team">
+      <h2 class="team-title">💾 Dark Data Keepers</h2>
+      <p class="team-role">Backend Development</p>
+      <div class="team-members">
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=7" alt="Pavel Croit">
+          <h3>Pavel Croit</h3>
+        </div>
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=8" alt="Daniela">
+          <h3>Daniela</h3>
+        </div>
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=9" alt="Arman A">
+          <h3>Arman A</h3>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- BA & Support Team -->
+    <section class="team-section hidden" id="ba-team">
+      <h2 class="team-title">🔮 Mystic Analysts</h2>
+      <p class="team-role">BA & Support</p>
+      <div class="team-members">
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=10" alt="Alexandrina">
+          <h3>Alexandrina</h3>
+        </div>
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=11" alt="Alexandra">
+          <h3>Alexandra</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- DevOps Team -->
+    <section class="team-section hidden" id="devops-team">
+      <h2 class="team-title">⚙️ Keepers of the Night Servers</h2>
+      <p class="team-role">DevOps</p>
+      <div class="team-members">
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=12" alt="Eugeniu Braga">
+          <h3>Eugeniu Braga</h3>
+        </div>
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=13" alt="Maxim">
+          <h3>Maxim</h3>
+        </div>
+        <div class="member-card">
+          <div class="eyes"></div>
+          <img src="https://picsum.photos/150/150?random=14" alt="Corneliu">
+          <h3>Corneliu</h3>
+        </div>
+      </div>
+    </section>
+
+  </div>
 
   <footer>
-    <p>© 2025 Haunted Office. Beware of bugs... 🪳</p>
+    <p>© 2025 Haunted Office. Beware of bugs... 🪳👻</p>
   </footer>
 
   <script src="script.js"></script>
