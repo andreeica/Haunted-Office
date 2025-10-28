@@ -207,7 +207,7 @@ body {
 /* Main Header */
 .main-header {
   position: relative;
-  z-index: 10;
+  z-index: 100;
   padding: 4rem 2rem;
   text-align: center;
 }
@@ -451,9 +451,10 @@ body {
   border: 3px solid #8b00ff;
   border-radius: 25px;
   transition: all 0.5s ease;
+  position: relative;
+  z-index: 100; /* Lower z-index чтобы карточки были поверх */
   opacity: 0;
   transform: translateY(30px);
-  position: relative;
   overflow: hidden;
 }
 
@@ -816,15 +817,15 @@ body {
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 200;
   overflow: hidden;
 }
 
 .flying-card {
-  position: absolute;
+  position: fixed; /* Fixed вместо absolute - фиксированы относительно viewport */
   width: 250px;
   height: 320px;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(30, 30, 30, 0.95));
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.96), rgba(30, 30, 30, 0.96));
   border: 3px solid;
   border-radius: 20px;
   padding: 1.5rem;
@@ -833,12 +834,13 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  box-shadow: 0 0 50px currentColor;
+  box-shadow: 0 0 50px currentColor, 0 0 100px rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   cursor: grab;
   pointer-events: auto;
   transition: all 0.3s ease;
   transform-origin: center;
+  z-index: 201; /* Just above container but below modal overlays */
 }
 
 .flying-card:active {
@@ -847,7 +849,7 @@ body {
 }
 
 .flying-card:hover {
-  z-index: 1001 !important;
+  z-index: 202 !important;
   box-shadow: 0 0 80px currentColor;
   filter: brightness(1.2);
 }
@@ -860,6 +862,13 @@ body {
   margin-bottom: 1rem;
   box-shadow: 0 0 20px currentColor;
   object-fit: cover;
+  pointer-events: none; /* Избегаем конфликта с карточкой */
+}
+
+.flying-card h3,
+.flying-card .member-role,
+.flying-card .member-power {
+  pointer-events: none; /* Текст не блокирует клики */
 }
 
 .flying-card h3 {
@@ -922,14 +931,8 @@ body {
   0%, 100% {
     transform: translate(0, 0) rotate(var(--rotation));
   }
-  25% {
-    transform: translate(var(--float-x), calc(var(--float-y) * -0.5)) rotate(calc(var(--rotation) + 5deg));
-  }
   50% {
-    transform: translate(calc(var(--float-x) * -0.5), var(--float-y)) rotate(calc(var(--rotation) - 5deg));
-  }
-  75% {
-    transform: translate(calc(var(--float-x) * 0.5), calc(var(--float-y) * -0.5)) rotate(calc(var(--rotation) + 3deg));
+    transform: translate(3px, -5px) rotate(calc(var(--rotation) + 2deg));
   }
 }
 

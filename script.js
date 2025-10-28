@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const backgroundAudio = document.getElementById('backgroundAudio');
   let currentTeamAudio = null;
   let currentOpenBox = null;
-  let flyingCards = [];
+  let flyingCards = new Map(); // Используем Map чтобы хранить карточки по командам
   
   // Page load animation message
   setTimeout(() => {
@@ -69,12 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
     this.style.transform = 'scale(0.5)';
     setTimeout(() => {
       this.style.display = 'none';
-      hideTeamsButton.style.display = 'block';
-      hideTeamsButton.style.opacity = '0';
-      setTimeout(() => {
-        hideTeamsButton.style.transition = 'opacity 0.5s ease';
-        hideTeamsButton.style.opacity = '1';
-      }, 100);
+      if (hideTeamsButton) {
+        hideTeamsButton.style.display = 'block';
+        hideTeamsButton.style.opacity = '0';
+        setTimeout(() => {
+          hideTeamsButton.style.transition = 'opacity 0.5s ease';
+          hideTeamsButton.style.opacity = '1';
+        }, 100);
+      }
     }, 500);
 
     // Reveal each team section one by one
@@ -220,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const members = JSON.parse(membersData);
       const theme = boxElement.getAttribute('data-theme');
+      const teamId = boxElement.closest('.team-section')?.id || 'unknown';
       
       // Play opening sound
       playBoxOpenSound();
@@ -236,10 +239,15 @@ document.addEventListener('DOMContentLoaded', () => {
       // Create explosion particles
       createBoxExplosion(boxRect);
       
+      // Initialize array for this team's cards if not exists
+      if (!flyingCards.has(teamId)) {
+        flyingCards.set(teamId, []);
+      }
+      
       // Fly cards out
       members.forEach((member, index) => {
         setTimeout(() => {
-          createFlyingCard(member, boxCenterX, boxCenterY, theme);
+          createFlyingCard(member, boxCenterX, boxCenterY, theme, teamId);
         }, index * 150);
       });
       
@@ -254,41 +262,77 @@ document.addEventListener('DOMContentLoaded', () => {
     
     playClosingSound();
     
+    // Get team ID
+    const teamSection = boxElement.closest('.team-section');
+    const teamId = teamSection?.id || 'unknown';
+    
     // Get box position
     const boxRect = boxElement.getBoundingClientRect();
     const boxCenterX = boxRect.left + boxRect.width / 2;
     const boxCenterY = boxRect.top + boxRect.height / 2;
     
-    // Animate all cards back to box
-    const cardsToRemove = [...flyingCards];
-    cardsToRemove.forEach((card, index) => {
+    // Animate only this team's cards back to box
+    const teamCards = flyingCards.get(teamId) || [];
+    teamCards.forEach((card, index) => {
       setTimeout(() => {
-        flyCardBack(card, boxCenterX, boxCenterY);
+        flyCardBack(card, boxCenterX, boxCenterY, teamId);
       }, index * 100);
     });
+    
+    // Clear this team's cards from the map
+    flyingCards.delete(teamId);
     
     // Close box
     setTimeout(() => {
       boxElement.classList.remove('opened');
       currentOpenBox = null;
-    }, cardsToRemove.length * 100 + 500);
+    }, teamCards.length * 100 + 500);
   }
 
   // Create Flying Card
-  function createFlyingCard(member, startX, startY, theme) {
+  function createFlyingCard(member, startX, startY, theme, teamId) {
     const card = document.createElement('div');
     card.className = 'flying-card';
     card.style.borderColor = getThemeColor(theme);
     card.style.color = getThemeColor(theme);
     
-    // Random position on screen
-    const targetX = 100 + Math.random() * (window.innerWidth - 400);
-    const targetY = 100 + Math.random() * (window.innerHeight - 500);
-    const rotation = -20 + Math.random() * 40;
+    // Get scroll position
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
     
-    // Calculate distance from box center
-    const dx = targetX - startX;
-    const dy = targetY - startY;
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Calculate position relative to viewport center (where the box is)
+    const centerX = scrollX + viewportWidth / 2;
+    const centerY = scrollY + viewportHeight / 2;
+    
+    // Calculate positions for organized layout (grid)
+    const cardsPerRow = 2; // Cards per row
+    const cardWidth = 280;
+    const cardHeight = 360;
+    const spacing = 40;
+    
+    // Calculate card index in team
+    const teamCards = flyingCards.get(teamId) || [];
+    const cardIndex = teamCards.length;
+    
+    // Calculate position in organized grid
+    const col = cardIndex % cardsPerRow;
+    const row = Math.floor(cardIndex / cardsPerRow);
+    
+    const gridStartX = centerX - (cardsPerRow * (cardWidth + spacing)) / 2 + spacing;
+    const gridStartY = centerY - cardHeight / 2;
+    
+    const targetX = gridStartX + col * (cardWidth + spacing);
+    const targetY = gridStartY + row * (cardHeight + 30);
+    
+    const rotation = -5 + Math.random() * 10; // Much less rotation
+    
+    // Calculate distance from box center for animation
+    const dx = targetX - centerX;
+    const dy = targetY - centerY;
     
     // Set initial position at box center
     card.style.left = targetX + 'px';
@@ -297,9 +341,9 @@ document.addEventListener('DOMContentLoaded', () => {
     card.style.setProperty('--start-y', dy + 'px');
     card.style.setProperty('--rotation', rotation + 'deg');
     
-    // Random floating values
-    const floatX = -30 + Math.random() * 60;
-    const floatY = -30 + Math.random() * 60;
+    // Small floating values for gentle movement
+    const floatX = -10 + Math.random() * 20;
+    const floatY = -10 + Math.random() * 20;
     card.style.setProperty('--float-x', floatX + 'px');
     card.style.setProperty('--float-y', floatY + 'px');
     
@@ -312,7 +356,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Add to container
     flyingCardsContainer.appendChild(card);
-    flyingCards.push(card);
+    
+    // Add to the team's cards array
+    if (!flyingCards.has(teamId)) {
+      flyingCards.set(teamId, []);
+    }
+    flyingCards.get(teamId).push(card);
     
     // Trigger explosion animation
     setTimeout(() => {
@@ -328,21 +377,66 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make card draggable
     makeDraggable(card);
     
-    // Click to play sound
+    // Gentle hover effect instead of pulse
+    card.addEventListener('mouseenter', () => {
+      card.style.transform = 'scale(1.05)';
+      card.style.zIndex = '202';
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      card.style.zIndex = '201';
+    });
+    
+    // Click to play sound AND run away from cursor!
     card.addEventListener('click', (e) => {
       if (!card.isDragging) {
         playCardSound();
-        card.style.animation = 'none';
+        
+        // Get click position
+        const clickX = e.clientX;
+        const clickY = e.clientY;
+        const cardRect = card.getBoundingClientRect();
+        const cardCenterX = cardRect.left + cardRect.width / 2;
+        const cardCenterY = cardRect.top + cardRect.height / 2;
+        
+        // Calculate direction away from click
+        const dx = cardCenterX - clickX;
+        const dy = cardCenterY - clickY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Normalize and multiply by escape distance
+        const escapeDistance = 200 + Math.random() * 150;
+        const escapeX = (dx / distance) * escapeDistance;
+        const escapeY = (dy / distance) * escapeDistance;
+        
+        // Calculate new position
+        const newX = parseInt(card.style.left) + escapeX;
+        const newY = parseInt(card.style.top) + escapeY;
+        
+        // Keep card within screen bounds
+        const finalX = Math.max(20, Math.min(window.innerWidth - cardRect.width - 20, newX));
+        const finalY = Math.max(20, Math.min(window.innerHeight - cardRect.height - 20, newY));
+        
+        // Animate card to new position
+        card.style.transition = 'all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)';
+        card.style.left = finalX + 'px';
+        card.style.top = finalY + 'px';
+        card.style.transform = 'rotate(' + (Math.random() * 30 - 15) + 'deg) scale(1.1)';
+        
+        // Reset and resume floating after animation
         setTimeout(() => {
+          card.style.transition = '';
           const duration = 4 + Math.random() * 3;
           card.style.animation = `cardFloatFree ${duration}s ease-in-out infinite`;
-        }, 10);
+          card.style.transform = '';
+        }, 600);
       }
     });
   }
 
   // Fly Card Back to Box
-  function flyCardBack(card, targetX, targetY) {
+  function flyCardBack(card, targetX, targetY, teamId) {
     const cardRect = card.getBoundingClientRect();
     const cardCenterX = cardRect.left + cardRect.width / 2;
     const cardCenterY = cardRect.top + cardRect.height / 2;
@@ -353,11 +447,27 @@ document.addEventListener('DOMContentLoaded', () => {
     card.style.setProperty('--start-x', dx + 'px');
     card.style.setProperty('--start-y', dy + 'px');
     
-    card.style.animation = `cardFlyBack 0.6s ease-in forwards`;
+    // Stop any animations
+    card.style.animation = '';
+    card.style.transition = '';
+    
+    // Animate back to box
+    card.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    card.style.left = targetX - 125 + 'px'; // Center on target
+    card.style.top = targetY - 160 + 'px';
+    card.style.transform = 'scale(0) rotate(720deg)';
+    card.style.opacity = '0';
     
     setTimeout(() => {
       card.remove();
-      flyingCards = flyingCards.filter(c => c !== card);
+      // Remove from the specific team's cards
+      if (flyingCards.has(teamId)) {
+        const teamCards = flyingCards.get(teamId);
+        const index = teamCards.indexOf(card);
+        if (index > -1) {
+          teamCards.splice(index, 1);
+        }
+      }
     }, 600);
   }
 
@@ -426,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function getThemeColor(theme) {
     const colors = {
       'starwars': '#ff0000',
-      'fixiki': '#00ff00',
+      'fixiki': '#0066ff', // Изменили с green на blue
       'matrix': '#00ff41',
       'mystics': '#9d4edd',
       'infra': '#ffd700'
