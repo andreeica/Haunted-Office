@@ -1,33 +1,80 @@
-// Console message
-console.log('👻 Welcome to the Haunted Office! The spirits are awakening...');
-
-// Wait for DOM to load
-document.addEventListener('DOMContentLoaded', function() {
+// 🎃 HAUNTED OFFICE - Main Script 🎃
+document.addEventListener('DOMContentLoaded', () => {
+  // Audio elements
+  const backgroundAudio = document.getElementById('backgroundAudio');
+  let currentTeamAudio = null;
+  let currentOpenBox = null;
+  let flyingCards = [];
   
   // Page load animation message
   setTimeout(() => {
     console.log('Haunted Office awakens... 🔮');
   }, 1000);
 
-  // Get the main title for hover sound effect
+  // Get elements
   const mainTitle = document.getElementById('main-title');
   const subtitle = document.getElementById('subtitle');
   const revealButton = document.getElementById('reveal-button');
+  const hideTeamsButton = document.getElementById('hide-teams-button');
   const teamSections = document.querySelectorAll('.team-section');
+  const flyingCardsContainer = document.getElementById('flyingCardsContainer');
   
-  // Play spooky sound on title hover (using Web Audio API for wind sound)
-  mainTitle.addEventListener('mouseenter', function() {
+  // Start background music on first interaction
+  let musicStarted = false;
+  document.body.addEventListener('click', function startMusic() {
+    if (!musicStarted && backgroundAudio && backgroundAudio.paused) {
+      backgroundAudio.volume = 0.4;
+      backgroundAudio.play().catch(e => console.log('Auto-play prevented:', e));
+      musicStarted = true;
+    }
+  }, { once: true });
+
+  // Main title hover effect
+  mainTitle.addEventListener('mouseenter', () => {
     playSpookySound();
-    // Visual effect is already in CSS (green glow)
+    createParticles(mainTitle.getBoundingClientRect());
+  });
+
+  // Floating pumpkins hover
+  const pumpkins = document.querySelectorAll('.floating-element');
+  pumpkins.forEach(pumpkin => {
+    pumpkin.addEventListener('mouseenter', () => {
+      playWitchLaughSound();
+    });
   });
 
   // Reveal Teams Button Functionality
   revealButton.addEventListener('click', function() {
-    // Hide the button
-    revealButton.style.transition = 'opacity 0.5s ease';
-    revealButton.style.opacity = '0';
+    playExplosionSound();
+    
+    // Reduce background music volume
+    if (backgroundAudio && !backgroundAudio.paused) {
+      let volume = backgroundAudio.volume;
+      const fadeOut = setInterval(() => {
+        if (volume > 0.1) {
+          volume -= 0.05;
+          backgroundAudio.volume = volume;
+        } else {
+          clearInterval(fadeOut);
+        }
+      }, 100);
+    }
+    
+    // Create explosion effect
+    createExplosion(this.getBoundingClientRect());
+    
+    // Hide reveal button and show hide button
+    this.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    this.style.opacity = '0';
+    this.style.transform = 'scale(0.5)';
     setTimeout(() => {
-      revealButton.style.display = 'none';
+      this.style.display = 'none';
+      hideTeamsButton.style.display = 'block';
+      hideTeamsButton.style.opacity = '0';
+      setTimeout(() => {
+        hideTeamsButton.style.transition = 'opacity 0.5s ease';
+        hideTeamsButton.style.opacity = '1';
+      }, 100);
     }, 500);
 
     // Reveal each team section one by one
@@ -36,295 +83,518 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(() => {
         section.classList.remove('hidden');
         section.classList.add('visible');
-        
-        // Add entry animation per team member
-        const memberCards = section.querySelectorAll('.member-card');
-        memberCards.forEach((card, cardIndex) => {
-          card.style.animationDelay = `${cardIndex * 0.2}s`;
-          card.classList.add('fadeInScale');
-        });
+        playRevealSound();
       }, delay);
       
-      delay += 800; // 800ms delay between each team reveal
+      delay += 600;
     });
   });
 
-  // Eyes following mouse cursor
-  let mouseX = 0;
-  let mouseY = 0;
-  
-  document.addEventListener('mousemove', function(e) {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
+  // Hide Teams Button Functionality
+  hideTeamsButton.addEventListener('click', function() {
+    playClosingSound();
     
-    updateEyesPosition();
-  });
-
-  function updateEyesPosition() {
-    const memberCards = document.querySelectorAll('.member-card');
-    
-    memberCards.forEach(card => {
-      const rect = card.getBoundingClientRect();
-      const cardCenterX = rect.left + rect.width / 2;
-      const cardCenterY = rect.top + rect.height / 2;
-      
-      // Calculate angle from card center to mouse
-      const angle = Math.atan2(mouseY - cardCenterY, mouseX - cardCenterX);
-      const distance = Math.min(Math.sqrt((mouseX - cardCenterX) ** 2 + (mouseY - cardCenterY) ** 2) / 10, 15);
-      
-      // Update eyes position within card
-      const eyes = card.querySelector('.eyes');
-      if (eyes) {
-        const offsetX = Math.cos(angle) * distance;
-        const offsetY = Math.sin(angle) * distance;
-        
-        eyes.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-      }
-    });
-  }
-
-  // Spooky sound function (wind/ghost sound using Web Audio API)
-  function playSpookySound() {
-    try {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      
-      // Create a low-frequency tone for wind/ghost effect
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(100, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(80, audioContext.currentTime + 0.3);
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.start();
-      oscillator.stop(audioContext.currentTime + 0.3);
-      
-      // Add a secondary tone for depth
-      setTimeout(() => {
-        const oscillator2 = audioContext.createOscillator();
-        const gainNode2 = audioContext.createGain();
-        
-        oscillator2.type = 'sawtooth';
-        oscillator2.frequency.setValueAtTime(150, audioContext.currentTime);
-        oscillator2.frequency.exponentialRampToValueAtTime(120, audioContext.currentTime + 0.2);
-        
-        gainNode2.gain.setValueAtTime(0.2, audioContext.currentTime);
-        gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-        
-        oscillator2.connect(gainNode2);
-        gainNode2.connect(audioContext.destination);
-        
-        oscillator2.start();
-        oscillator2.stop(audioContext.currentTime + 0.2);
-      }, 50);
-      
-    } catch (error) {
-      console.log('Could not play sound:', error);
+    // Close any open box first
+    if (currentOpenBox) {
+      closeBox(currentOpenBox);
     }
-  }
+    
+    // Hide all team sections
+    teamSections.forEach(section => {
+      section.classList.remove('visible');
+      section.classList.add('hidden');
+    });
+    
+    // Show reveal button and hide hide button
+    this.style.transition = 'opacity 0.5s ease';
+    this.style.opacity = '0';
+    setTimeout(() => {
+      this.style.display = 'none';
+      revealButton.style.display = 'block';
+      revealButton.style.opacity = '0';
+      setTimeout(() => {
+        revealButton.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        revealButton.style.opacity = '1';
+        revealButton.style.transform = 'scale(1)';
+      }, 100);
+    }, 500);
+    
+    // Restore background music
+    if (backgroundAudio) {
+      let volume = backgroundAudio.volume;
+      const fadeIn = setInterval(() => {
+        if (volume < 0.4) {
+          volume += 0.04;
+          backgroundAudio.volume = volume;
+        } else {
+          clearInterval(fadeIn);
+        }
+      }, 100);
+    }
+  });
 
-  // Additional dynamic glow effects for team sections
+  // Team section hover effects - play theme music
   teamSections.forEach(section => {
+    const theme = section.getAttribute('data-theme');
+    
     section.addEventListener('mouseenter', function() {
-      this.style.borderColor = '#00ff00';
-      this.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.5)';
+      if (currentTeamAudio) {
+        currentTeamAudio.pause();
+        currentTeamAudio.currentTime = 0;
+      }
+      
+      // Dim main music more
+      if (backgroundAudio && !backgroundAudio.paused) {
+        backgroundAudio.volume = 0.05;
+      }
+      
+      // Get appropriate audio for theme
+      let audio = null;
+      if (theme === 'starwars') {
+        audio = document.getElementById('starwars-bg-audio');
+      } else if (theme === 'fixiki') {
+        audio = document.getElementById('fixiki-bg-audio');
+      } else if (theme === 'matrix') {
+        audio = document.getElementById('matrix-bg-audio');
+      } else if (theme === 'mystics') {
+        audio = document.getElementById('mystics-bg-audio');
+      } else if (theme === 'infra') {
+        audio = document.getElementById('infra-bg-audio');
+      }
+      
+      if (audio) {
+        audio.volume = 0.5;
+        audio.play().catch(e => console.log('Audio play error:', e));
+        currentTeamAudio = audio;
+      }
+      
+      // Visual effect
+      this.style.transform = 'scale(1.02)';
+      this.style.boxShadow = '0 0 50px currentColor';
     });
     
     section.addEventListener('mouseleave', function() {
-      this.style.borderColor = '#8b00ff';
+      if (currentTeamAudio) {
+        currentTeamAudio.pause();
+        currentTeamAudio.currentTime = 0;
+      }
+      
+      // Restore main music
+      if (backgroundAudio && !backgroundAudio.paused) {
+        backgroundAudio.volume = 0.1;
+      }
+      
+      this.style.transform = 'scale(1)';
       this.style.boxShadow = 'none';
     });
   });
 
-  // Get modal elements
-  const modal = document.getElementById('pavelModal');
-  const closeBtn = document.querySelector('.close');
-  const audio = document.getElementById('modalAudio');
-
-  // Random sparkle effect on click
-  document.addEventListener('click', function(e) {
-    const memberCard = e.target.closest('.member-card');
-    if (memberCard) {
-      createSparkle(e.clientX, e.clientY);
-      
-      // Check if this is Pavel Croitor's card
-      if (memberCard.getAttribute('data-name') === 'pavel-croitor') {
-        const imagePath = memberCard.getAttribute('data-image');
-        if (imagePath) {
-          // Show modal
-          modal.classList.add('active');
-          document.body.style.overflow = 'hidden';
-          
-          // Play music
-          playAwesomeMusic();
-          
-          console.log('Opening Pavel\'s modal with image:', imagePath);
-        }
-      }
-    }
-  });
-
-  // Close modal when clicking X
-  closeBtn.addEventListener('click', function() {
-    modal.classList.remove('active');
-    document.body.style.overflow = 'auto';
-    stopMusic();
-  });
-
-  // Close modal when clicking outside
-  window.addEventListener('click', function(e) {
-    if (e.target === modal) {
-      modal.classList.remove('active');
-      document.body.style.overflow = 'auto';
-      stopMusic();
-    }
-  });
-
-  // Play awesome music using Web Audio API
-  let audioContext;
+  // Mystery Box Click - Open/Close
+  const mysteryBoxes = document.querySelectorAll('.mystery-box');
   
-  function playAwesomeMusic() {
-    try {
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  mysteryBoxes.forEach(box => {
+    box.addEventListener('click', function() {
+      const isOpen = this.classList.contains('opened');
+      
+      if (isOpen) {
+        // Close this box
+        closeBox(this);
+      } else {
+        // Close any other open box first
+        if (currentOpenBox && currentOpenBox !== this) {
+          closeBox(currentOpenBox);
+        }
+        // Open this box
+        openBox(this);
       }
-      
-      // Epic opening chord
-      setTimeout(() => playNote(261.63, 0.2, 0.3, 'sine'), 0);      // C4
-      setTimeout(() => playNote(329.63, 0.2, 0.3, 'sine'), 0);      // E4
-      setTimeout(() => playNote(392.00, 0.2, 0.3, 'sine'), 0);      // G4
-      
-      // Haunting melody
-      setTimeout(() => playNote(523.25, 0.15, 0.5, 'triangle'), 300);
-      setTimeout(() => playNote(659.25, 0.15, 0.5, 'triangle'), 700);
-      setTimeout(() => playNote(783.99, 0.15, 0.5, 'triangle'), 1000);
-      setTimeout(() => playNote(523.25, 0.15, 0.5, 'triangle'), 1300);
-      setTimeout(() => playNote(440.00, 0.15, 0.5, 'triangle'), 1600);
-      setTimeout(() => playNote(392.00, 0.15, 0.5, 'triangle'), 1900);
-      
-      // Spooky bass
-      setTimeout(() => playNote(130.81, 0.18, 1.0, 'square'), 500);
-      setTimeout(() => playNote(98.00, 0.18, 1.0, 'square'), 1000);
-      
-      // Atmospheric pad
-      for (let i = 0; i < 5; i++) {
-        setTimeout(() => playNote(220 + i * 20, 0.1, 2.0, 'sine'), 2000 + i * 200);
-      }
-      
-      console.log('🎵 Awesome music playing!');
-      
-    } catch (error) {
-      console.log('Could not play music:', error);
-    }
-  }
+    });
+  });
 
-  function playNote(frequency, volume, duration, type) {
-    try {
-      const osc = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      osc.type = type;
-      osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
-      
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-      
-      osc.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      osc.start();
-      osc.stop(audioContext.currentTime + duration);
-    } catch (error) {
-      console.log('Note error:', error);
-    }
-  }
-
-  function stopMusic() {
-    if (audioContext) {
-      audioContext.close();
-      audioContext = null;
-    }
-  }
-
-  function createSparkle(x, y) {
-    const sparkle = document.createElement('div');
-    sparkle.style.position = 'fixed';
-    sparkle.style.left = x + 'px';
-    sparkle.style.top = y + 'px';
-    sparkle.style.width = '10px';
-    sparkle.style.height = '10px';
-    sparkle.style.borderRadius = '50%';
-    sparkle.style.background = '#00ff00';
-    sparkle.style.boxShadow = '0 0 20px #00ff00';
-    sparkle.style.pointerEvents = 'none';
-    sparkle.style.zIndex = '9999';
-    sparkle.style.animation = 'sparkle 0.8s ease-out forwards';
+  // Open Box and Fly Cards Out
+  function openBox(boxElement) {
+    const box3d = boxElement.querySelector('.box-3d');
+    const membersData = boxElement.getAttribute('data-members');
     
-    document.body.appendChild(sparkle);
+    if (!membersData) return;
+    
+    try {
+      const members = JSON.parse(membersData);
+      const theme = boxElement.getAttribute('data-theme');
+      
+      // Play opening sound
+      playBoxOpenSound();
+      
+      // Mark box as opened
+      boxElement.classList.add('opened');
+      currentOpenBox = boxElement;
+      
+      // Get box position on screen
+      const boxRect = boxElement.getBoundingClientRect();
+      const boxCenterX = boxRect.left + boxRect.width / 2;
+      const boxCenterY = boxRect.top + boxRect.height / 2;
+      
+      // Create explosion particles
+      createBoxExplosion(boxRect);
+      
+      // Fly cards out
+      members.forEach((member, index) => {
+        setTimeout(() => {
+          createFlyingCard(member, boxCenterX, boxCenterY, theme);
+        }, index * 150);
+      });
+      
+    } catch (error) {
+      console.error('Error parsing members data:', error);
+    }
+  }
+
+  // Close Box and Return Cards
+  function closeBox(boxElement) {
+    if (!boxElement) return;
+    
+    playClosingSound();
+    
+    // Get box position
+    const boxRect = boxElement.getBoundingClientRect();
+    const boxCenterX = boxRect.left + boxRect.width / 2;
+    const boxCenterY = boxRect.top + boxRect.height / 2;
+    
+    // Animate all cards back to box
+    const cardsToRemove = [...flyingCards];
+    cardsToRemove.forEach((card, index) => {
+      setTimeout(() => {
+        flyCardBack(card, boxCenterX, boxCenterY);
+      }, index * 100);
+    });
+    
+    // Close box
+    setTimeout(() => {
+      boxElement.classList.remove('opened');
+      currentOpenBox = null;
+    }, cardsToRemove.length * 100 + 500);
+  }
+
+  // Create Flying Card
+  function createFlyingCard(member, startX, startY, theme) {
+    const card = document.createElement('div');
+    card.className = 'flying-card';
+    card.style.borderColor = getThemeColor(theme);
+    card.style.color = getThemeColor(theme);
+    
+    // Random position on screen
+    const targetX = 100 + Math.random() * (window.innerWidth - 400);
+    const targetY = 100 + Math.random() * (window.innerHeight - 500);
+    const rotation = -20 + Math.random() * 40;
+    
+    // Calculate distance from box center
+    const dx = targetX - startX;
+    const dy = targetY - startY;
+    
+    // Set initial position at box center
+    card.style.left = targetX + 'px';
+    card.style.top = targetY + 'px';
+    card.style.setProperty('--start-x', dx + 'px');
+    card.style.setProperty('--start-y', dy + 'px');
+    card.style.setProperty('--rotation', rotation + 'deg');
+    
+    // Random floating values
+    const floatX = -30 + Math.random() * 60;
+    const floatY = -30 + Math.random() * 60;
+    card.style.setProperty('--float-x', floatX + 'px');
+    card.style.setProperty('--float-y', floatY + 'px');
+    
+    card.innerHTML = `
+      <img src="${member.image}" alt="${member.name}">
+      <h3>${member.name}</h3>
+      <p class="member-role">${member.role}</p>
+      <p class="member-power">"${member.power}"</p>
+    `;
+    
+    // Add to container
+    flyingCardsContainer.appendChild(card);
+    flyingCards.push(card);
+    
+    // Trigger explosion animation
+    setTimeout(() => {
+      card.style.animation = `cardFlyOut 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards`;
+    }, 50);
+    
+    // After explosion, start floating
+    setTimeout(() => {
+      const duration = 4 + Math.random() * 3;
+      card.style.animation = `cardFloatFree ${duration}s ease-in-out infinite`;
+    }, 850);
+    
+    // Make card draggable
+    makeDraggable(card);
+    
+    // Click to play sound
+    card.addEventListener('click', (e) => {
+      if (!card.isDragging) {
+        playCardSound();
+        card.style.animation = 'none';
+        setTimeout(() => {
+          const duration = 4 + Math.random() * 3;
+          card.style.animation = `cardFloatFree ${duration}s ease-in-out infinite`;
+        }, 10);
+      }
+    });
+  }
+
+  // Fly Card Back to Box
+  function flyCardBack(card, targetX, targetY) {
+    const cardRect = card.getBoundingClientRect();
+    const cardCenterX = cardRect.left + cardRect.width / 2;
+    const cardCenterY = cardRect.top + cardRect.height / 2;
+    
+    const dx = cardCenterX - targetX;
+    const dy = cardCenterY - targetY;
+    
+    card.style.setProperty('--start-x', dx + 'px');
+    card.style.setProperty('--start-y', dy + 'px');
+    
+    card.style.animation = `cardFlyBack 0.6s ease-in forwards`;
     
     setTimeout(() => {
-      sparkle.remove();
-    }, 800);
+      card.remove();
+      flyingCards = flyingCards.filter(c => c !== card);
+    }, 600);
   }
 
-  // Add CSS for sparkle animation
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes sparkle {
-      0% {
-        transform: scale(0) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(3) rotate(360deg);
-        opacity: 0;
-      }
+  // Make card draggable
+  function makeDraggable(card) {
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+    
+    card.addEventListener('mousedown', startDrag);
+    card.addEventListener('touchstart', startDrag);
+    
+    function startDrag(e) {
+      isDragging = true;
+      card.isDragging = true;
+      
+      const touch = e.touches ? e.touches[0] : e;
+      startX = touch.clientX;
+      startY = touch.clientY;
+      
+      const rect = card.getBoundingClientRect();
+      initialX = rect.left;
+      initialY = rect.top;
+      
+      card.style.animation = 'none';
+      card.style.zIndex = '10000';
+      
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('touchmove', drag);
+      document.addEventListener('mouseup', stopDrag);
+      document.addEventListener('touchend', stopDrag);
     }
     
-    .fadeInScale {
-      animation: fadeInScale 0.5s ease-out both;
+    function drag(e) {
+      if (!isDragging) return;
+      
+      const touch = e.touches ? e.touches[0] : e;
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      
+      card.style.left = (initialX + dx) + 'px';
+      card.style.top = (initialY + dy) + 'px';
     }
     
-    @keyframes fadeInScale {
-      from {
-        opacity: 0;
-        transform: scale(0.8) translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
+    function stopDrag() {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      setTimeout(() => {
+        card.isDragging = false;
+      }, 100);
+      
+      card.style.zIndex = '1000';
+      
+      // Resume floating animation
+      const duration = 4 + Math.random() * 3;
+      card.style.animation = `cardFloatFree ${duration}s ease-in-out infinite`;
+      
+      document.removeEventListener('mousemove', drag);
+      document.removeEventListener('touchmove', drag);
+      document.removeEventListener('mouseup', stopDrag);
+      document.removeEventListener('touchend', stopDrag);
     }
-  `;
-  document.head.appendChild(style);
+  }
+
+  // Get theme color
+  function getThemeColor(theme) {
+    const colors = {
+      'starwars': '#ff0000',
+      'fixiki': '#00ff00',
+      'matrix': '#00ff41',
+      'mystics': '#9d4edd',
+      'infra': '#ffd700'
+    };
+    return colors[theme] || '#ff6600';
+  }
+
+  // Random green glow pulses on team sections
+  setInterval(() => {
+    const visibleSections = Array.from(teamSections).filter(s => s.classList.contains('visible'));
+    if (visibleSections.length > 0) {
+      const randomSection = visibleSections[Math.floor(Math.random() * visibleSections.length)];
+      randomSection.style.transition = 'all 0.3s ease';
+      randomSection.style.boxShadow = '0 0 60px rgba(0, 255, 0, 0.5)';
+      
+      setTimeout(() => {
+        randomSection.style.boxShadow = 'none';
+      }, 500);
+    }
+  }, 4000);
+
+  console.log('🎵 Haunted Office initialized!');
 });
 
-// Continuous bat flapping effect
-setInterval(() => {
-  const bats = document.querySelectorAll('.bat');
-  bats.forEach(bat => {
-    bat.style.transform += ' rotate(5deg)';
-  });
-}, 1000);
+// ===== PARTICLE EFFECTS =====
 
-// Random green glow pulses on the page
-setInterval(() => {
-  const randomSection = Math.floor(Math.random() * 5);
-  const sections = document.querySelectorAll('.team-section');
-  
-  if (sections[randomSection]) {
-    sections[randomSection].style.transition = 'all 0.3s ease';
-    sections[randomSection].style.boxShadow = '0 0 40px rgba(0, 255, 0, 0.3)';
+function createParticles(rect) {
+  for (let i = 0; i < 15; i++) {
+    const particle = document.createElement('div');
+    particle.style.position = 'fixed';
+    particle.style.left = (rect.left + rect.width / 2) + 'px';
+    particle.style.top = (rect.top + rect.height / 2) + 'px';
+    particle.style.width = '6px';
+    particle.style.height = '6px';
+    particle.style.borderRadius = '50%';
+    particle.style.background = `hsl(${Math.random() * 60 + 15}, 100%, 50%)`;
+    particle.style.pointerEvents = 'none';
+    particle.style.zIndex = '9999';
+    
+    const angle = (Math.PI * 2 * i) / 15;
+    const velocity = 100 + Math.random() * 50;
+    const tx = Math.cos(angle) * velocity;
+    const ty = Math.sin(angle) * velocity;
+    
+    particle.style.transition = 'all 0.6s ease-out';
+    document.body.appendChild(particle);
     
     setTimeout(() => {
-      sections[randomSection].style.boxShadow = 'none';
-    }, 500);
+      particle.style.transform = `translate(${tx}px, ${ty}px)`;
+      particle.style.opacity = '0';
+    }, 10);
+    
+    setTimeout(() => particle.remove(), 600);
   }
-}, 3000);
+}
+
+function createExplosion(rect) {
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  
+  for (let i = 0; i < 50; i++) {
+    const particle = document.createElement('div');
+    particle.style.position = 'fixed';
+    particle.style.left = centerX + 'px';
+    particle.style.top = centerY + 'px';
+    particle.style.width = '10px';
+    particle.style.height = '10px';
+    particle.style.borderRadius = '50%';
+    particle.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    particle.style.pointerEvents = 'none';
+    particle.style.zIndex = '9999';
+    particle.style.boxShadow = `0 0 10px ${particle.style.background}`;
+    
+    const angle = (Math.PI * 2 * i) / 50;
+    const velocity = 200 + Math.random() * 200;
+    const tx = Math.cos(angle) * velocity;
+    const ty = Math.sin(angle) * velocity;
+    
+    particle.style.transition = 'all 1s ease-out';
+    document.body.appendChild(particle);
+    
+    setTimeout(() => {
+      particle.style.transform = `translate(${tx}px, ${ty}px)`;
+      particle.style.opacity = '0';
+    }, 10);
+    
+    setTimeout(() => particle.remove(), 1000);
+  }
+}
+
+function createBoxExplosion(rect) {
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  
+  for (let i = 0; i < 30; i++) {
+    const particle = document.createElement('div');
+    particle.textContent = ['✨', '🌟', '⭐', '💫', '🔮'][Math.floor(Math.random() * 5)];
+    particle.style.position = 'fixed';
+    particle.style.left = centerX + 'px';
+    particle.style.top = centerY + 'px';
+    particle.style.fontSize = '1.5rem';
+    particle.style.pointerEvents = 'none';
+    particle.style.zIndex = '9999';
+    
+    const angle = (Math.PI * 2 * i) / 30;
+    const velocity = 150 + Math.random() * 150;
+    const tx = Math.cos(angle) * velocity;
+    const ty = Math.sin(angle) * velocity;
+    
+    particle.style.transition = 'all 1s ease-out';
+    document.body.appendChild(particle);
+    
+    setTimeout(() => {
+      particle.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random() * 720}deg)`;
+      particle.style.opacity = '0';
+    }, 10);
+    
+    setTimeout(() => particle.remove(), 1000);
+  }
+}
+
+// ===== SOUND EFFECTS =====
+
+function playSpookySound() {
+  playSound(300, 0.1, 'sine', 0.3);
+}
+
+function playExplosionSound() {
+  playSound(100, 0.2, 'sawtooth', 0.5);
+}
+
+function playRevealSound() {
+  playSound(600, 0.1, 'sine', 0.2);
+}
+
+function playCardSound() {
+  playSound(800, 0.05, 'sine', 0.15);
+}
+
+function playBoxOpenSound() {
+  playSound(400, 0.3, 'triangle', 0.4);
+  setTimeout(() => playSound(600, 0.2, 'sine', 0.3), 100);
+}
+
+function playClosingSound() {
+  playSound(200, 0.2, 'sawtooth', 0.3);
+}
+
+function playWitchLaughSound() {
+  playSound(150, 0.15, 'sawtooth', 0.2);
+}
+
+function playSound(frequency, duration, type = 'sine', volume = 0.3) {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = frequency;
+    oscillator.type = type;
+    gainNode.gain.value = volume;
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + duration);
+  } catch (e) {
+    // Silent fail if Web Audio API not supported
+  }
+}

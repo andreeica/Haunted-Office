@@ -6,7 +6,7 @@
   <title>Haunted Office 👻</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Poppins:wght@300;400;500;600;700;800&family=Bebas+Neue&family=Creepster&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,147 +23,240 @@
   <div class="bat bat2">🦇</div>
   <div class="bat bat3">🦇</div>
   
+  <!-- Thematic Floating Elements -->
+  <div class="floating-element element1">⭐</div>
+  <div class="floating-element element2">🔧</div>
+  <div class="floating-element element3">💚</div>
+  <div class="floating-element element4">🔮</div>
+  <div class="floating-element element5">⚡</div>
+  
+  <!-- Halloween Pumpkin Background -->
+  <div class="pumpkin pumpkin1">🎃</div>
+  <div class="pumpkin pumpkin2">🎃</div>
+  <div class="pumpkin pumpkin3">🎃</div>
+  
+  <!-- Background Audio - Harry Potter Prologue -->
+  <audio id="backgroundAudio" loop preload="auto">
+    <source src="audio/john-williams-prologue.mp3" type="audio/mpeg">
+    <source src="https://www.bensound.com/bensound-music/bensound-darkforest.mp3" type="audio/mpeg">
+  </audio>
+  
   <!-- Main Content -->
   <header class="main-header">
     <div class="typewriter-container">
-      <h1 id="main-title">Welcome to the Haunted Office</h1>
+      <h1 id="main-title">Hora Team</h1>
+      <div class="team-logo">
+        <div class="tower-base">🏢</div>
+        <div class="tower-glow"></div>
+        <div class="avengers-ring"></div>
+      </div>
     </div>
-    <p id="subtitle">Where code meets the spirit world</p>
-    <button id="reveal-button" class="reveal-button">🔮 Meet the Teams 🔮</button>
+    <p id="subtitle">Where Developers Meet the Dark Side of the Code 🔮</p>
+    <div class="button-container">
+      <button id="reveal-button" class="reveal-button">🔮 Meet the Teams 🔮</button>
+      <button id="hide-teams-button" class="hide-teams-button" style="display: none;">← Back to Home</button>
+    </div>
   </header>
 
-  <!-- Teams Container -->
-  <div class="teams-container">
+  <!-- Teams Container with Scroll -->
+  <div class="teams-container" id="teamsContainer">
     
-    <!-- QA Team -->
-    <section class="team-section hidden" id="qa-team">
-      <h2 class="team-title">🧪 Inspectors of the Unknown</h2>
-      <p class="team-role">QA Team</p>
-      <div class="team-members">
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Andrei Cebotari">
-          <h3>Andrei Cebotari</h3>
+    <!-- Backend Team - STAR WARS DARK SIDE -->
+    <section class="team-section hidden" id="backend-team" data-theme="starwars">
+      <div class="team-background" data-bg="starwars">
+        <div class="stars"></div>
+        <div class="death-star">☠️</div>
+      </div>
+      <h2 class="team-title">⚫ THE ORDER OF THE CODE ⚫</h2>
+      <p class="team-subtitle">Lords of the Backend - Masters of the Dark Stack</p>
+      <audio id="starwars-bg-audio" loop preload="auto">
+        <source src="audio/Star_Wars_-_The_Imperial_March_2_(mp3.pm).mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-epic.mp3" type="audio/mpeg">
+      </audio>
+      
+      <!-- 3D Box -->
+      <div class="mystery-box" data-theme="starwars" data-animation="sith" data-members='[
+        {"name":"⚫ DARTH COMMITUS ⚫","role":"Lead Sith Lord • Master of Commits","power":"I command the builds and the merges obey me!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Pavel&backgroundColor=8b0000"},
+        {"name":"⚫ DARTH ASYNCUS ⚫","role":"Async Master • Promise Keeper","power":"My promises never break... they await eternally!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Async&backgroundColor=8b0000"},
+        {"name":"⚫ DARTH CACHER ⚫","role":"Cache Lord • Memory Warden","power":"Nothing is forgotten, nothing is lost in my cache!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Cache&backgroundColor=8b0000"},
+        {"name":"⚫ LADY QUERYA ⚫","role":"Database Sorceress • SQL Witch","power":"My queries pierce the darkest schemas!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Query&backgroundColor=8b0000"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">⚫</div>
+            <h3>SITH LORDS</h3>
+            <p>Click to Reveal</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">☠️</div>
+          </div>
+          <div class="box-face box-bottom"></div>
         </div>
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Nichita Tabac">
-          <h3>Nichita Tabac</h3>
-        </div>
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Denic Nicula">
-          <h3>Denic Nicula</h3>
-        </div>
+        <div class="box-particles"></div>
       </div>
     </section>
 
-    <!-- Frontend Team -->
-    <section class="team-section hidden" id="frontend-team">
-      <h2 class="team-title">🕸 Ghostly UI Crafters</h2>
-      <p class="team-role">Frontend Development</p>
-      <div class="team-members">
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Sergiu Filipopolschi">
-          <h3>Sergiu Filipopolschi</h3>
+    <!-- Frontend Team - FIXIKI -->
+    <section class="team-section hidden" id="frontend-team" data-theme="fixiki">
+      <div class="team-background" data-bg="fixiki">
+        <div class="tool-float">🔧</div>
+        <div class="tool-float">⚙️</div>
+        <div class="tool-float">🔨</div>
+      </div>
+      <h2 class="team-title">🔧 THE BUG FIXIKI SQUAD 🔧</h2>
+      <p class="team-subtitle">Masters of UI Resurrection</p>
+      <audio id="fixiki-bg-audio" loop preload="auto">
+        <source src="audio/fixiki-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-littleidea.mp3" type="audio/mpeg">
+      </audio>
+      
+      <!-- 3D Box -->
+      <div class="mystery-box" data-theme="fixiki" data-animation="tools" data-members='[
+        {"name":"🔧 FIX MASTER SERGIU 🔧","role":"Chief Fixik • UI Magician","power":"Every bug shall be fixed! Every pixel aligned!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Sergiu&backgroundColor=00d4ff"},
+        {"name":"🔧 FIX MASTER MIHAI 🔧","role":"Code Cleaner • Style Ninja","power":"Code must sparkle! Logic must flow perfectly!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Mihai&backgroundColor=00d4ff"},
+        {"name":"🔧 FIX MASTER IVAN 🔧","role":"CSS Magician • Style Sorcerer","power":"CSS bends to my will! Animations obey me!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan&backgroundColor=00d4ff"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">🔧</div>
+            <h3>TOOL BOX</h3>
+            <p>Click to Open</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">⚙️</div>
+          </div>
+          <div class="box-face box-bottom"></div>
         </div>
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Mihai Chistol">
-          <h3>Mihai Chistol</h3>
-        </div>
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Ivan Chelish">
-          <h3>Ivan Chelish</h3>
-        </div>
+        <div class="box-particles"></div>
       </div>
     </section>
 
-    <!-- Backend Team -->
-    <section class="team-section hidden" id="backend-team">
-      <h2 class="team-title">💾 Dark Data Keepers</h2>
-      <p class="team-role">Backend Development</p>
-      <div class="team-members">
-        <div class="member-card" data-name="pavel-croitor" data-image="IMG\PavelC.jpg" style="cursor: pointer;">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Pavel Croitor">
-          <h3>Pavel Croitor</h3>
-          <p style="font-size: 0.9rem; color: #ff6600; margin-top: 0.5rem; text-align: center;">👆 Click 👆</p>
+    <!-- QA Team - MATRIX -->
+    <section class="team-section hidden" id="qa-team" data-theme="matrix">
+      <div class="team-background" data-bg="matrix">
+        <div class="matrix-code">01</div>
+        <div class="matrix-code">10</div>
+        <div class="matrix-code">11</div>
+      </div>
+      <h2 class="team-title">🔍 THE MATRIX INSPECTORS 🔍</h2>
+      <p class="team-subtitle">Seekers of Truth in the Code Matrix</p>
+      <audio id="matrix-bg-audio" loop preload="auto">
+        <source src="audio/matrix-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-scifi.mp3" type="audio/mpeg">
+      </audio>
+      
+      <!-- 3D Box -->
+      <div class="mystery-box" data-theme="matrix" data-animation="matrix" data-members='[
+        {"name":"💚 NEO FINDER 💚","role":"Code Detective • Bug Hunter","power":"I see bugs where others see none!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Neo&backgroundColor=00ff41"},
+        {"name":"💚 TRINITY TESTER 💚","role":"Test Oracle • Quality Prophet","power":"My tests reveal all hidden truths!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Trinity&backgroundColor=00ff41"},
+        {"name":"💚 MORPHEUS VALIDATOR 💚","role":"Code Validator • Gate Keeper","power":"Nothing passes without my approval!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Morpheus&backgroundColor=00ff41"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">💊</div>
+            <h3>PILL BOX</h3>
+            <p>Red or Blue?</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">👁️</div>
+          </div>
+          <div class="box-face box-bottom"></div>
         </div>
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Daniela">
-          <h3>Daniela</h3>
-        </div>
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Arman A">
-          <h3>Arman A</h3>
-        </div>
+        <div class="box-particles"></div>
       </div>
     </section>
 
-    <!-- BA & Support Team -->
-    <section class="team-section hidden" id="ba-team">
-      <h2 class="team-title">🔮 Mystic Analysts</h2>
-      <p class="team-role">BA & Support</p>
-      <div class="team-members">
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Alexandrina">
-          <h3>Alexandrina</h3>
+    <!-- BA & Support Team - MYSTICS -->
+    <section class="team-section hidden" id="ba-team" data-theme="mystics">
+      <div class="team-background" data-bg="mystics">
+        <div class="crystal-ball">🔮</div>
+        <div class="crystal-ball">✨</div>
+      </div>
+      <h2 class="team-title">🔮 MYSTIC ANALYSTS 🔮</h2>
+      <p class="team-subtitle">Visionaries of Business Mysteries</p>
+      <audio id="mystics-bg-audio" loop preload="auto">
+        <source src="audio/mystics-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-enigmatic.mp3" type="audio/mpeg">
+      </audio>
+      
+      <!-- 3D Box -->
+      <div class="mystery-box" data-theme="mystics" data-animation="magic" data-members='[
+        {"name":"🔮 CRYSTAL SEER 🔮","role":"Requirement Oracle • Vision Keeper","power":"I foresee the requirements of the future!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Crystal&backgroundColor=8b00ff"},
+        {"name":"🔮 SUPPORT SORCERESS 🔮","role":"Problem Sorceress • Solution Witch","power":"Every problem has a magical solution!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Support&backgroundColor=8b00ff"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">🔮</div>
+            <h3>MAGIC BOX</h3>
+            <p>Reveal the Future</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">✨</div>
+          </div>
+          <div class="box-face box-bottom"></div>
         </div>
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Alexandra">
-          <h3>Alexandra</h3>
-        </div>
+        <div class="box-particles"></div>
       </div>
     </section>
 
-    <!-- DevOps Team -->
-    <section class="team-section hidden" id="devops-team">
-      <h2 class="team-title">⚙️ Keepers of the Night Servers</h2>
-      <p class="team-role">DevOps</p>
-      <div class="team-members">
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Eugeniu Braga">
-          <h3>Eugeniu Braga</h3>
+    <!-- DevOps Team - INFRASTRUCTURE -->
+    <section class="team-section hidden" id="devops-team" data-theme="infra">
+      <div class="team-background" data-bg="infra">
+        <div class="server-icon">🖥️</div>
+        <div class="server-icon">☁️</div>
+      </div>
+      <h2 class="team-title">⚡ INFRASTRUCTURE MAGES ⚡</h2>
+      <p class="team-subtitle">Keepers of the Cloud Realms</p>
+      <audio id="infra-bg-audio" loop preload="auto">
+        <source src="audio/infra-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-energy.mp3" type="audio/mpeg">
+      </audio>
+      
+      <!-- 3D Box -->
+      <div class="mystery-box" data-theme="infra" data-animation="power" data-members='[
+        {"name":"⚡ DEPLOY MASTER ⚡","role":"Cloud Mage • Deploy Wizard","power":"My deployments never fail! Zero downtime!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Deploy&backgroundColor=ffaa00"},
+        {"name":"⚡ DOCKER KEEPER ⚡","role":"Container Sorcerer • Docker Master","power":"Everything runs in my containers!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Docker&backgroundColor=ffaa00"},
+        {"name":"⚡ SERVER WARDEN ⚡","role":"Server Keeper • Infrastructure Guard","power":"Servers bow to my command!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Server&backgroundColor=ffaa00"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">⚡</div>
+            <h3>POWER BOX</h3>
+            <p>Unleash the Power</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">☁️</div>
+          </div>
+          <div class="box-face box-bottom"></div>
         </div>
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Maxim">
-          <h3>Maxim</h3>
-        </div>
-        <div class="member-card">
-          <div class="eyes"></div>
-          <img src="IMG\halloween-pumpkin-free-svg-file-SvgHeart.Com.png" alt="Corneliu">
-          <h3>Corneliu</h3>
-        </div>
+        <div class="box-particles"></div>
       </div>
     </section>
 
   </div>
+  
+  <!-- Flying Cards Container (on main page) -->
+  <div id="flyingCardsContainer" class="flying-cards-container"></div>
 
   <footer>
-    <p>© 2025 Haunted Office. Beware of bugs... 🪳👻</p>
+    <p>© 2025 Haunted Office 🎃👻 | May the code be with you... always 🚀⚫</p>
+    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Powered by Dark Side of Backend & Bug Fixiki Squad</p>
   </footer>
-
-  <!-- Modal -->
-  <div id="pavelModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Pavel Croitor</h2>
-      <img src="IMG\PavelC.jpg" alt="Pavel Croitor" id="modalImage">
-      <p>Backend Developer | Dark Data Keeper</p>
-      <audio id="modalAudio" autoplay loop>
-        <source src="" type="audio/mpeg">
-      </audio>
-    </div>
-  </div>
 
   <script src="script.js"></script>
 </body>
