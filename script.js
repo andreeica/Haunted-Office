@@ -434,44 +434,6 @@ document.addEventListener('DOMContentLoaded', () => {
       card.style.zIndex = '201';
     });
     
-    // Click to toggle enlargement (с раскрытием текста)
-    card.addEventListener('click', () => {
-      if (card.isDragging) return;
-      const enlarged = card.getAttribute('data-enlarged') === 'true';
-      if (!enlarged) {
-        card.setAttribute('data-enlarged', 'true');
-        card.classList.add('enlarged');
-        card.style.transition = 'all 0.4s ease';
-        card.style.transform = 'scale(1.6)';
-        card.style.width = '350px';
-        card.style.height = 'auto';
-        card.style.minHeight = '480px';
-        card.style.zIndex = '205';
-        card.style.boxShadow = '0 0 150px currentColor, 0 0 200px currentColor';
-        card.style.filter = 'brightness(1.3)';
-        // Stop floating entirely чтобы не тянуло карту
-        card.dataset.prevAnimation = card.style.animation || '';
-        card.style.animation = 'none';
-        // Показываем весь текст
-        const roleEl = card.querySelector('.member-role');
-        const powerEl = card.querySelector('.member-power');
-        if (roleEl) roleEl.style.display = 'block';
-        if (powerEl) powerEl.style.display = 'block';
-      } else {
-        card.setAttribute('data-enlarged', 'false');
-        card.classList.remove('enlarged');
-        card.style.transform = '';
-        card.style.width = '';
-        card.style.height = '';
-        card.style.minHeight = '';
-        card.style.zIndex = '201';
-        card.style.boxShadow = '';
-        card.style.filter = '';
-        // Resume floating
-        const d = Number(card.dataset.floatDuration || '5');
-        card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
-      }
-    });
   }
 
   // Fly Card Back to Box
@@ -518,67 +480,137 @@ document.addEventListener('DOMContentLoaded', () => {
   // Make card draggable
   function makeDraggable(card) {
     let isDragging = false;
+    let hasMoved = false;
     let startX, startY, initialX, initialY;
+    const DRAG_THRESHOLD = 5; // Минимальное движение для начала drag
     
     card.addEventListener('mousedown', startDrag);
     card.addEventListener('touchstart', startDrag);
     
     function startDrag(e) {
-      isDragging = true;
-      card.isDragging = true;
+      hasMoved = false;
+      card.isDragging = false; // Пока не уверены что это drag
+      card.hasMoved = false; // Флаг для клика
       
       const touch = e.touches ? e.touches[0] : e;
       startX = touch.clientX;
       startY = touch.clientY;
       
       const rect = card.getBoundingClientRect();
-      initialX = rect.left;
-      initialY = rect.top;
+      initialX = parseFloat(card.style.left) || rect.left;
+      initialY = parseFloat(card.style.top) || rect.top;
       
-      // cancel enlarge if active
-      if (card.getAttribute('data-enlarged') === 'true') {
-        card.setAttribute('data-enlarged', 'false');
-        card.style.transform = '';
-        card.style.boxShadow = '';
-        card.style.filter = '';
-      }
-      // stop any floating animation during drag
-      card.style.animation = 'none';
-      card.style.zIndex = '10000';
-      
-      document.addEventListener('mousemove', drag);
-      document.addEventListener('touchmove', drag);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('touchmove', onMove);
       document.addEventListener('mouseup', stopDrag);
       document.addEventListener('touchend', stopDrag);
     }
     
-    function drag(e) {
-      if (!isDragging) return;
-      
+    function onMove(e) {
       const touch = e.touches ? e.touches[0] : e;
       const dx = touch.clientX - startX;
       const dy = touch.clientY - startY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
       
-      card.style.left = (initialX + dx) + 'px';
-      card.style.top = (initialY + dy) + 'px';
+      // Если движение достаточно большое - начинаем drag
+      if (distance > DRAG_THRESHOLD && !isDragging) {
+        isDragging = true;
+        card.isDragging = true;
+        card.hasMoved = true;
+        hasMoved = true;
+        
+        // cancel enlarge if active
+        if (card.getAttribute('data-enlarged') === 'true') {
+          card.setAttribute('data-enlarged', 'false');
+          card.classList.remove('enlarged');
+          card.style.transform = '';
+          card.style.width = '';
+          card.style.height = '';
+          card.style.minHeight = '';
+          card.style.boxShadow = '';
+          card.style.filter = '';
+        }
+        // stop any floating animation during drag
+        card.style.animation = 'none';
+        card.style.zIndex = '10000';
+        card.style.transition = 'none'; // Убираем transition при drag
+      }
+      
+      if (isDragging) {
+        // Используем правильные координаты (relative to viewport)
+        card.style.left = (initialX + dx) + 'px';
+        card.style.top = (initialY + dy) + 'px';
+      }
+    }
+    
+    function toggleCardEnlarge() {
+      const enlarged = card.getAttribute('data-enlarged') === 'true';
+      if (!enlarged) {
+        card.setAttribute('data-enlarged', 'true');
+        card.classList.add('enlarged');
+        card.style.transition = 'all 0.4s ease';
+        card.style.transform = 'scale(1.6)';
+        card.style.width = '350px';
+        card.style.height = 'auto';
+        card.style.minHeight = '480px';
+        card.style.zIndex = '205';
+        card.style.boxShadow = '0 0 150px currentColor, 0 0 200px currentColor';
+        card.style.filter = 'brightness(1.3)';
+        // Stop floating entirely чтобы не тянуло карту
+        card.dataset.prevAnimation = card.style.animation || '';
+        card.style.animation = 'none';
+        // Показываем весь текст
+        const roleEl = card.querySelector('.member-role');
+        const powerEl = card.querySelector('.member-power');
+        if (roleEl) roleEl.style.display = 'block';
+        if (powerEl) powerEl.style.display = 'block';
+      } else {
+        card.setAttribute('data-enlarged', 'false');
+        card.classList.remove('enlarged');
+        card.style.transform = '';
+        card.style.width = '';
+        card.style.height = '';
+        card.style.minHeight = '';
+        card.style.zIndex = '201';
+        card.style.boxShadow = '';
+        card.style.filter = '';
+        // Resume floating
+        const d = Number(card.dataset.floatDuration || '5');
+        card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
+      }
     }
     
     function stopDrag() {
-      if (!isDragging) return;
+      // Если не было движения (это был клик) - увеличиваем карточку
+      if (!hasMoved && !isDragging) {
+        toggleCardEnlarge();
+      }
       
-      isDragging = false;
-      setTimeout(() => {
-        card.isDragging = false;
-      }, 100);
+      if (isDragging) {
+        isDragging = false;
+        card.style.transition = 'all 0.3s ease'; // Возвращаем transition
+        
+        setTimeout(() => {
+          card.isDragging = false;
+          card.hasMoved = false; // Сбрасываем флаг
+        }, 100);
+        
+        card.style.zIndex = card.getAttribute('data-enlarged') === 'true' ? '205' : '201';
+        
+        // Resume floating animation только если карточка не увеличена
+        if (card.getAttribute('data-enlarged') !== 'true') {
+          const d = Number(card.dataset.floatDuration || '5');
+          card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
+        }
+      } else {
+        // Если не было drag, сбрасываем флаг сразу
+        setTimeout(() => {
+          card.hasMoved = false;
+        }, 50);
+      }
       
-      card.style.zIndex = '201';
-      
-      // Resume floating animation
-      const d = Number(card.dataset.floatDuration || '5');
-      card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
-      
-      document.removeEventListener('mousemove', drag);
-      document.removeEventListener('touchmove', drag);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('touchmove', onMove);
       document.removeEventListener('mouseup', stopDrag);
       document.removeEventListener('touchend', stopDrag);
     }
