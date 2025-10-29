@@ -1,0 +1,63 @@
+Frontend (Фиксики):
+
+1) Sergiu Filipopolschi — If something on the page is broken, he says, “I’ll Fixiki that in a few stepsiki!”  
+2) Mihai Chistol — The real Fixiki of the team, magically fixing pixels faster than you can say “broken UI!”  
+3) Ivan Chelish — Arranges layout issues even faster than Papus can fix a washing machine.
+
+ Backend (старворс):
+
+1) Pavel Croitor — May the source be with him; can refactor code faster than invading a new planet.  
+2) Daniela — Uses the Force to balance all databases, but she still prefers dark mode to the Dark Side.  
+3) Arman A — Like a true Sith, he deploys features with such precision and stealth.
+
+ BA (малефисента):
+
+1) Alexandrina — Foresees requirements before clients finish their spells; her favorite color is total black.  
+2) Alexandra — Answers questions with grace and sometimes sarcasm, but demands a quick massage for that.  
+3) Anton Zhilin — Untangles requirement messes like a wizard decoding ancient spells.
+
+DevOps (гарри поттер):
+
+1) Eugeniu — On business days, keeps the server alive; on weekends, fights Voldemort.  
+2) Maxim — Deploys updates with the speed of a Firebolt, evading bugs as if they were Dementors.  
+3) Cornel — Keeps the magical cloud secure behind invisible shields.
+
+ Дизайнер (вампир):
+
+Наташа — Keeps the design alive even after sunset.
+
+ CTO — Тони Старк:
+
+The genius behind the tech and tough architectural armor.
+
+ PM — Капитан Америка:
+
+Leader who strategizes every mission and keeps the team united through every battle.
+
+ CEO — Крестный отец:
+
+The ultimate boss who makes offers no one can refuse, ruling the company with power and respect.
+
+ Бухгалтерия — La Casa de Papel:
+
+Mastermind of plans and numbers, always ready to execute the perfect heist on targets.
+
+ Мобайл Dev — Super Mario:
+
+1) Jumps through bugs and glitches like levels, collecting success coins one sprint at a time.  
+2) Power-ups? Cake! Just give him coffee and watch features deploy!  
+3) Runs faster than enemies find him — fixing bugs with a jump and a spin.
+
+ Mobile QA — Гхостбастеры:
+
+1) Swings the pack to fight sneaky bugs and haunt them.  
+2) No ghost or glitch can hide from her testing guns.  
+3) Catches bugs like ectoplasm, leaving the app ghost-free and ready to impress.
+
+ Magic QA (сверхъестественное):
+
+1) Andrei Cebotari — Faces spooky bugs without fear… because nothing surprises him after releases on Fridays.  
+2) Nichita Tabac — Wears a garlic necklace to keep away not vampires but regression bugs.  
+3) Denic Nicula — Debugs with silver and holy water — no bug survives the exorcism!
+
+это контент для каж
