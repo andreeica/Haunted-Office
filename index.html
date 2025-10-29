@@ -56,7 +56,7 @@
     </div>
     <p id="subtitle">Where Developers Meet the Dark Side of the Code 🔮</p>
     <div class="button-container">
-      <button id="reveal-button" class="reveal-button">🔮 Meet the Teams 🔮</button>
+    <button id="reveal-button" class="reveal-button">🔮 Meet the Teams 🔮</button>
       <button id="hide-teams-button" class="hide-teams-button" style="display: none;">← Back to Home</button>
     </div>
   </header>
@@ -64,41 +64,354 @@
   <!-- Teams Container with Scroll -->
   <div class="teams-container" id="teamsContainer">
     
-    <!-- Backend Team - STAR WARS DARK SIDE -->
-    <section class="team-section hidden" id="backend-team" data-theme="starwars">
-      <div class="team-background" data-bg="starwars">
-        <div class="stars"></div>
-        <div class="death-star">☠️</div>
+    <!-- CEO -->
+    <section class="team-section hidden" id="ceo-team" data-theme="royal">
+      <div class="team-background" data-bg="royal">
+        <div class="royal-crown">👑</div>
+        <div class="royal-crown">⭐</div>
       </div>
-      <h2 class="team-title">⚫ THE ORDER OF THE CODE ⚫</h2>
-      <p class="team-subtitle">Lords of the Backend - Masters of the Dark Stack</p>
-      <audio id="starwars-bg-audio" loop preload="auto">
-        <source src="audio/imperial_march.mp3" type="audio/mpeg">
-        <source src="audio/darth-vader.mp3" type="audio/mpeg">
-        <source src="audio/starwars-background.mp3" type="audio/mpeg">
-        <source src="audio/Star_Wars_-_The_Imperial_March_2_(mp3.pm).mp3" type="audio/mpeg">
+      <h2 class="team-title">👑 THE HIGH COMMAND 👑</h2>
+      <p class="team-subtitle">Supreme Leader of All Code Realms</p>
+      <audio id="royal-bg-audio" loop preload="auto">
+        <source src="audio/royal-theme.mp3" type="audio/mpeg">
         <source src="https://www.bensound.com/bensound-music/bensound-epic.mp3" type="audio/mpeg">
       </audio>
       
-      <!-- 3D Box -->
-      <div class="mystery-box" data-theme="starwars" data-animation="sith" data-members='[
-        {"name":"⚫ DARTH COMMITUS ⚫","role":"Lead Sith Lord • Master of Commits","power":"I command the builds and the merges obey me!","image":"IMG/PavelC.jpg"},
-        {"name":"⚫ DARTH ASYNCUS ⚫","role":"Async Master • Promise Keeper","power":"My promises never break... they await eternally!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Async&backgroundColor=8b0000"},
-        {"name":"⚫ DARTH CACHER ⚫","role":"Cache Lord • Memory Warden","power":"Nothing is forgotten, nothing is lost in my cache!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Cache&backgroundColor=8b0000"},
-        {"name":"⚫ LADY QUERYA ⚫","role":"Database Sorceress • SQL Witch","power":"My queries pierce the darkest schemas!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Query&backgroundColor=8b0000"}
+      <div class="mystery-box" data-theme="royal" data-animation="royal" data-members='[
+        {"name":"👑 ARTUR BUMBU 👑","role":"CEO • Supreme Commander","power":"I command the vision and all strategies obey!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Artur&backgroundColor=ffd700"}
       ]'>
         <div class="box-3d" data-state="closed">
           <div class="box-face box-front">
-            <div class="box-symbol">⚫</div>
-            <h3>SITH LORDS</h3>
+            <div class="box-symbol">👑</div>
+            <h3>THRONE</h3>
             <p>Click to Reveal</p>
           </div>
           <div class="box-face box-back"></div>
           <div class="box-face box-left"></div>
           <div class="box-face box-right"></div>
           <div class="box-face box-top">
-            <div class="box-lid-symbol">☠️</div>
+            <div class="box-lid-symbol">⭐</div>
           </div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <div class="box-particles"></div>
+      </div>
+    </section>
+
+    <!-- Mobile Team -->
+    <section class="team-section hidden" id="mobile-team" data-theme="mobile">
+      <div class="team-background" data-bg="mobile">
+        <div class="app-icon">📱</div>
+        <div class="app-icon">✨</div>
+      </div>
+      <h2 class="team-title">📱 POCKET WIZARDS 📱</h2>
+      <p class="team-subtitle">Mobile Team — AR spells and swift charms</p>
+      <audio id="mobile-bg-audio" loop preload="auto">
+        <source src="audio/mobile-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-hey.mp3" type="audio/mpeg">
+      </audio>
+      
+      <div class="mystery-box" data-theme="mobile" data-animation="tools" data-members='[
+        {"name":"📱 CONSTANTIN CRISMARI — The Pocket Archmage 📱","role":"Mobile Lead","power":"Summons features into tiny screens","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Constantin&backgroundColor=00d4ff"},
+        {"name":"📱 MIHAI CIUBOTARU — The Touch Sorcerer 📱","role":"Mobile Dev","power":"Gestures obey his spells","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=MihaiC&backgroundColor=00d4ff"},
+        {"name":"📱 CRISTIAN POTINGA — The FPS Enchanter 📱","role":"Mobile Dev","power":"60fps even on haunted devices","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=CristianP&backgroundColor=00d4ff"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">📱</div>
+            <h3>POCKET BOX</h3>
+            <p>Tap to Reveal</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">✨</div>
+          </div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <div class="box-particles"></div>
+      </div>
+    </section>
+
+    <!-- BA & PO — Mysterius Squad -->
+    <section class="team-section hidden" id="product-team" data-theme="mystics">
+      <div class="team-background" data-bg="mystics">
+        <div class="crystal-ball">🔮</div>
+        <div class="crystal-ball">✨</div>
+      </div>
+      <h2 class="team-title">🔮 THE MYSTERIOUS PRODUCT GUILD 🔮</h2>
+      <p class="team-subtitle">BA & PO — Whisperers of Requirements</p>
+      <audio id="mystics-bg-audio" loop preload="auto">
+        <source src="audio/mystics-theme.mp3" type="audio/mpeg">
+        <source src="audio/mystics-background.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-enigmatic.mp3" type="audio/mpeg">
+      </audio>
+      
+      <div class="mystery-box" data-theme="mystics" data-animation="magic" data-members='[
+        {"name":"🔮 ALEXANDRINA REABOI — The Vision Oracle 🔮","role":"PO • Requirement Oracle","power":"Turns fuzzy wishes into crystal‑clear stories","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Alexandrina&backgroundColor=8b00ff"},
+        {"name":"🔮 ALEXANDRA ZUENCO — The Scope Witch 🔮","role":"PO • Priority Enchantress","power":"Backlog submits to her wand","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Alexandra&backgroundColor=8b00ff"},
+        {"name":"🔮 ANTON ZHILIN — The BA Scribe 🔮","role":"BA • Keeper of Acceptance Criteria","power":"Writes specs that even demons understand","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Anton&backgroundColor=8b00ff"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">🔮</div>
+            <h3>PRODUCT BOX</h3>
+            <p>Reveal the Visions</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">✨</div>
+          </div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <div class="box-particles"></div>
+      </div>
+    </section>
+
+    <!-- Finance Department -->
+    <section class="team-section hidden" id="finance-team" data-theme="alchemy">
+      <div class="team-background" data-bg="alchemy">
+        <div class="coin-icon">💰</div>
+        <div class="coin-icon">🧪</div>
+      </div>
+      <h2 class="team-title">💰 COIN ALCHEMISTS 💰</h2>
+      <p class="team-subtitle">Masters of Financial Transformation</p>
+      <audio id="alchemy-bg-audio" loop preload="auto">
+        <source src="audio/alchemy-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-littleidea.mp3" type="audio/mpeg">
+      </audio>
+      
+      <div class="mystery-box" data-theme="alchemy" data-animation="magic" data-members='[
+        {"name":"💰 ZINAIDA BUMBU — The Coin Summoner 💰","role":"Finance Lead • Alchemy Master","power":"Turns chaos into balanced ledgers!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Zinaida&backgroundColor=ffaa00"},
+        {"name":"💰 VICTORIA NISTORICA — The Ledger Witch 💰","role":"Accountant • Number Sorceress","power":"My spreadsheets reveal all financial truths!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Victoria&backgroundColor=ffaa00"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">💰</div>
+            <h3>TREASURE BOX</h3>
+            <p>Click to Open</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">🧪</div>
+          </div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <div class="box-particles"></div>
+      </div>
+    </section>
+
+    <!-- HR Department -->
+    <section class="team-section hidden" id="hr-team" data-theme="recruiter">
+      <div class="team-background" data-bg="recruiter">
+        <div class="talent-icon">🧲</div>
+        <div class="talent-icon">💼</div>
+      </div>
+      <h2 class="team-title">🧲 SOUL SUMMONERS 🧲</h2>
+      <p class="team-subtitle">Masters of Talent Discovery</p>
+      <audio id="recruiter-bg-audio" loop preload="auto">
+        <source src="audio/recruiter-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-littleidea.mp3" type="audio/mpeg">
+      </audio>
+      
+      <div class="mystery-box" data-theme="recruiter" data-animation="tools" data-members='[
+        {"name":"🧲 SORINA PUȘCAȘ — The Soul Catcher 🧲","role":"HR Manager • Talent Summoner","power":"Summons perfect matches from the void!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Sorina&backgroundColor=9d4edd"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">🧲</div>
+            <h3>TALENT BOX</h3>
+            <p>Click to Reveal</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">💼</div>
+          </div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <div class="box-particles"></div>
+      </div>
+    </section>
+
+    <!-- Board Team -->
+    <section class="team-section hidden" id="board-team" data-theme="oracle">
+      <div class="team-background" data-bg="oracle">
+        <div class="oracle-icon">🔮</div>
+        <div class="oracle-icon">⚡</div>
+      </div>
+      <h2 class="team-title">🔮 COUNCIL OF ORACLES 🔮</h2>
+      <p class="team-subtitle">CTO & PM — Vision Keepers of Strategic Wisdom</p>
+      <audio id="oracle-bg-audio" loop preload="auto">
+        <source src="audio/oracle-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-enigmatic.mp3" type="audio/mpeg">
+      </audio>
+      
+      <div class="mystery-box" data-theme="oracle" data-animation="magic" data-members='[
+        {"name":"🔮 VLADISLAV ZLATIN — The CTO Oracle 🔮","role":"CTO • Archmage of Architecture","power":"Sees the future of our stack and bends it to will","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Vladislav&backgroundColor=8b00ff"},
+        {"name":"🔮 DMITRI IURCO — The PM Seer 🔮","role":"PM • Keeper of Roadmaps","power":"Schedules align when his staff strikes the ground","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Dmitri&backgroundColor=8b00ff"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">🔮</div>
+            <h3>ORACLE BOX</h3>
+            <p>Click to Reveal</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">⚡</div>
+          </div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <div class="box-particles"></div>
+      </div>
+    </section>
+
+    <!-- DevOps Division -->
+    <section class="team-section hidden" id="devops-team" data-theme="infra">
+      <div class="team-background" data-bg="infra">
+        <div class="server-icon">🖥️</div>
+        <div class="server-icon">☁️</div>
+      </div>
+      <h2 class="team-title">⚡ INFRASTRUCTURE MAGES ⚡</h2>
+      <p class="team-subtitle">Keepers of the Cloud Realms</p>
+          <audio id="infra-bg-audio" loop preload="auto">
+            <source src="audio/infra-theme.mp3" type="audio/mpeg">
+            <source src="audio/infra-background.mp3" type="audio/mpeg">
+            <source src="https://www.bensound.com/bensound-music/bensound-energy.mp3" type="audio/mpeg">
+          </audio>
+      
+      <div class="mystery-box" data-theme="infra" data-animation="power" data-members='[
+        {"name":"⚡ EUGEN BRAGA ⚡","role":"DevOps Lead • Cloud Mage","power":"My infrastructure commands all clouds!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Eugen&backgroundColor=ffaa00"},
+        {"name":"⚡ MAXIM CRAVȚOV ⚡","role":"DevOps • Server Wizard","power":"Servers dance to my deployment spells!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Maxim&backgroundColor=ffaa00"},
+        {"name":"⚡ CORNELIU CIUREA ⚡","role":"DevOps • Infrastructure Sorcerer","power":"I weave clouds into perfect harmony!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Corneliu&backgroundColor=ffaa00"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">⚡</div>
+            <h3>POWER BOX</h3>
+            <p>Unleash the Power</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">☁️</div>
+          </div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <div class="box-particles"></div>
+      </div>
+    </section>
+
+    <!-- QA Division - Manual -->
+    <section class="team-section hidden" id="qa-manual-team" data-theme="detective">
+      <div class="team-background" data-bg="detective">
+        <div class="magnifier-icon">🔍</div>
+        <div class="magnifier-icon">🗝️</div>
+      </div>
+      <h2 class="team-title">🔍 RIDDLE INSPECTORS 🔍</h2>
+      <p class="team-subtitle">Manual QA - Seekers of Hidden Truths</p>
+      <audio id="detective-bg-audio" loop preload="auto">
+        <source src="audio/detective-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-dark.mp3" type="audio/mpeg">
+      </audio>
+      
+      <div class="mystery-box" data-theme="detective" data-animation="matrix" data-members='[
+        {"name":"🔍 ANDREI CEBOTARI 🔍","role":"QA Manual • Bug Detective","power":"I find what others cannot see!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Andrei&backgroundColor=4a5568"},
+        {"name":"🔍 NIKITA TABAC 🔍","role":"QA Manual • Mystery Solver","power":"Every bug leaves a trace!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Nikita&backgroundColor=4a5568"},
+        {"name":"🔍 DENIS NICULA 🔍","role":"QA Manual • Truth Seeker","power":"The truth is always in the details!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Denis&backgroundColor=4a5568"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">🔍</div>
+            <h3>DETECTIVE BOX</h3>
+            <p>Click to Reveal</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">🗝️</div>
+          </div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <div class="box-particles"></div>
+      </div>
+    </section>
+
+    <!-- QA Division - Mobile -->
+    <section class="team-section hidden" id="qa-mobile-team" data-theme="exorcist">
+      <div class="team-background" data-bg="exorcist">
+        <div class="app-icon">📲</div>
+        <div class="app-icon">🧿</div>
+      </div>
+      <h2 class="team-title">📲 APP EXORCISTS 📲</h2>
+      <p class="team-subtitle">Mobile QA - Banishers of App Bugs</p>
+      <audio id="exorcist-bg-audio" loop preload="auto">
+        <source src="audio/exorcist-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-scifi.mp3" type="audio/mpeg">
+      </audio>
+      
+      <div class="mystery-box" data-theme="exorcist" data-animation="tools" data-members='[
+        {"name":"📲 ROȘCA CRISTIAN 📲","role":"QA Mobile • App Purifier","power":"I cleanse apps of all mobile demons!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Cristian&backgroundColor=6b46c1"},
+        {"name":"📲 ALEX BURACINSCHI 📲","role":"QA Mobile • Bug Banishment Master","power":"No bug survives my mobile exorcism!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Alex&backgroundColor=6b46c1"},
+        {"name":"📲 DOINA SERETEINEAN 📲","role":"QA Mobile • App Guardian","power":"Every app must be pure and bug-free!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Doina&backgroundColor=6b46c1"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">📲</div>
+            <h3>EXORCIST BOX</h3>
+            <p>Click to Open</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">🧿</div>
+          </div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <div class="box-particles"></div>
+      </div>
+    </section>
+
+    <!-- QA Division - Automation -->
+    <section class="team-section hidden" id="qa-automation-team" data-theme="specter">
+      <div class="team-background" data-bg="specter">
+        <div class="specter-icon">🤖</div>
+        <div class="specter-icon">👻</div>
+      </div>
+      <h2 class="team-title">🤖 SCRIPT SPECTERS 🤖</h2>
+      <p class="team-subtitle">QA Automation - Ghosts of Test Scripts</p>
+      <audio id="specter-bg-audio" loop preload="auto">
+        <source src="audio/specter-theme.mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-scifi.mp3" type="audio/mpeg">
+      </audio>
+      
+      <div class="mystery-box" data-theme="specter" data-animation="matrix" data-members='[
+        {"name":"🤖 ADRIAN ANTONOV 🤖","role":"QA Automation • Script Ghost","power":"My scripts haunt bugs eternally!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Adrian&backgroundColor=1f2937"}
+      ]'>
+        <div class="box-3d" data-state="closed">
+          <div class="box-face box-front">
+            <div class="box-symbol">🤖</div>
+            <h3>SPECTER BOX</h3>
+            <p>Click to Reveal</p>
+          </div>
+          <div class="box-face box-back"></div>
+          <div class="box-face box-left"></div>
+          <div class="box-face box-right"></div>
+          <div class="box-face box-top">
+            <div class="box-lid-symbol">👻</div>
+        </div>
           <div class="box-face box-bottom"></div>
         </div>
         <div class="box-particles"></div>
@@ -125,9 +438,9 @@
       
       <!-- 3D Box -->
       <div class="mystery-box" data-theme="fixiki" data-animation="tools" data-members='[
-        {"name":"🔧 FIX MASTER SERGIU 🔧","role":"Chief Fixik • UI Magician","power":"Every bug shall be fixed! Every pixel aligned!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Sergiu&backgroundColor=00d4ff"},
-        {"name":"🔧 FIX MASTER MIHAI 🔧","role":"Code Cleaner • Style Ninja","power":"Code must sparkle! Logic must flow perfectly!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Mihai&backgroundColor=00d4ff"},
-        {"name":"🔧 FIX MASTER IVAN 🔧","role":"CSS Magician • Style Sorcerer","power":"CSS bends to my will! Animations obey me!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan&backgroundColor=00d4ff"}
+        {"name":"🔧 MIHAI CHISTOL 🔧","role":"Frontend • UI Fixik","power":"Every bug shall be fixed! Every pixel aligned!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Mihai&backgroundColor=00d4ff"},
+        {"name":"🔧 SERGHEI FILIPOPOLSKI 🔧","role":"Frontend • Code Fixik","power":"Code must sparkle! Logic must flow perfectly!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Serghei&backgroundColor=00d4ff"},
+        {"name":"🔧 IVAN CHELEȘ 🔧","role":"Frontend • Style Fixik","power":"CSS bends to my will! Animations obey me!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan&backgroundColor=00d4ff"}
       ]'>
         <div class="box-3d" data-state="closed">
           <div class="box-face box-front">
@@ -140,127 +453,50 @@
           <div class="box-face box-right"></div>
           <div class="box-face box-top">
             <div class="box-lid-symbol">⚙️</div>
-          </div>
+        </div>
           <div class="box-face box-bottom"></div>
         </div>
         <div class="box-particles"></div>
       </div>
     </section>
 
-    <!-- QA Team - MATRIX -->
-    <section class="team-section hidden" id="qa-team" data-theme="matrix">
-      <div class="team-background" data-bg="matrix">
-        <div class="matrix-code">01</div>
-        <div class="matrix-code">10</div>
-        <div class="matrix-code">11</div>
+    <!-- Backend Team - STAR WARS DARK SIDE -->
+    <section class="team-section hidden" id="backend-team" data-theme="starwars">
+      <div class="team-background" data-bg="starwars">
+        <div class="stars"></div>
+        <div class="death-star">☠️</div>
       </div>
-      <h2 class="team-title">🔍 THE MATRIX INSPECTORS 🔍</h2>
-      <p class="team-subtitle">Seekers of Truth in the Code Matrix</p>
-      <audio id="matrix-bg-audio" loop preload="auto">
-        <source src="audio/matrix-theme.mp3" type="audio/mpeg">
-        <source src="audio/matrix-background.mp3" type="audio/mpeg">
-        <source src="https://www.bensound.com/bensound-music/bensound-scifi.mp3" type="audio/mpeg">
+      <h2 class="team-title">⚫ THE ORDER OF THE CODE ⚫</h2>
+      <p class="team-subtitle">Lords of the Backend - Masters of the Dark Stack</p>
+      <audio id="starwars-bg-audio" loop preload="auto">
+        <source src="audio/imperial_march.mp3" type="audio/mpeg">
+        <source src="audio/darth-vader.mp3" type="audio/mpeg">
+        <source src="audio/starwars-background.mp3" type="audio/mpeg">
+        <source src="audio/Star_Wars_-_The_Imperial_March_2_(mp3.pm).mp3" type="audio/mpeg">
+        <source src="https://www.bensound.com/bensound-music/bensound-epic.mp3" type="audio/mpeg">
+      </audio>
+      <audio id="starwars-hover-sound" preload="auto">
+        <source src="audio/lightsaber.mp3" type="audio/mpeg">
       </audio>
       
-      <!-- 3D Box -->
-      <div class="mystery-box" data-theme="matrix" data-animation="matrix" data-members='[
-        {"name":"💚 NEO FINDER 💚","role":"Code Detective • Bug Hunter","power":"I see bugs where others see none!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Neo&backgroundColor=00ff41"},
-        {"name":"💚 TRINITY TESTER 💚","role":"Test Oracle • Quality Prophet","power":"My tests reveal all hidden truths!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Trinity&backgroundColor=00ff41"},
-        {"name":"💚 MORPHEUS VALIDATOR 💚","role":"Code Validator • Gate Keeper","power":"Nothing passes without my approval!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Morpheus&backgroundColor=00ff41"}
+      <div class="mystery-box" data-theme="starwars" data-animation="sith" data-members='[
+        {"name":"PAVEL CROITOR — ⚫ DARTH COMMITUS ⚫","role":"Backend Lead • Master of Commits","power":"I command the builds and the merges obey me!","image":"IMG/PavelC.jpg"},
+        {"name":"VLADIMIR EGOROV — ⚫ DARTH ASYNCUS ⚫","role":"Backend Dev • Async Overlord","power":"My promises never break... they await eternally!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Vladimir&backgroundColor=8b0000"},
+        {"name":"ARMAN ARUTUNIAN — ⚫ DARTH CACHER ⚫","role":"Backend Dev • Cache Lord","power":"Nothing is forgotten, nothing is lost in my cache!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Arman&backgroundColor=8b0000"},
+        {"name":"DANIELA AVTENII — ⚫ LADY QUERYA ⚫","role":"Backend Dev • Database Sorceress","power":"My queries pierce the darkest schemas!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Daniela&backgroundColor=8b0000"}
       ]'>
         <div class="box-3d" data-state="closed">
           <div class="box-face box-front">
-            <div class="box-symbol">💊</div>
-            <h3>PILL BOX</h3>
-            <p>Red or Blue?</p>
-          </div>
-          <div class="box-face box-back"></div>
-          <div class="box-face box-left"></div>
-          <div class="box-face box-right"></div>
-          <div class="box-face box-top">
-            <div class="box-lid-symbol">👁️</div>
-          </div>
-          <div class="box-face box-bottom"></div>
+            <div class="box-symbol">⚫</div>
+            <h3>SITH LORDS</h3>
+            <p>Click to Reveal</p>
         </div>
-        <div class="box-particles"></div>
-      </div>
-    </section>
-
-    <!-- BA & Support Team - MYSTICS -->
-    <section class="team-section hidden" id="ba-team" data-theme="mystics">
-      <div class="team-background" data-bg="mystics">
-        <div class="crystal-ball">🔮</div>
-        <div class="crystal-ball">✨</div>
-      </div>
-      <h2 class="team-title">🔮 MYSTIC ANALYSTS 🔮</h2>
-      <p class="team-subtitle">Visionaries of Business Mysteries</p>
-      <audio id="mystics-bg-audio" loop preload="auto">
-        <source src="audio/mystics-theme.mp3" type="audio/mpeg">
-        <source src="audio/mystics-background.mp3" type="audio/mpeg">
-        <source src="https://www.bensound.com/bensound-music/bensound-enigmatic.mp3" type="audio/mpeg">
-      </audio>
-      
-      <!-- 3D Box -->
-      <div class="mystery-box" data-theme="mystics" data-animation="magic" data-members='[
-        {"name":"🔮 CRYSTAL SEER 🔮","role":"Requirement Oracle • Vision Keeper","power":"I foresee the requirements of the future!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Crystal&backgroundColor=8b00ff"},
-        {"name":"🔮 SUPPORT SORCERESS 🔮","role":"Problem Sorceress • Solution Witch","power":"Every problem has a magical solution!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Support&backgroundColor=8b00ff"}
-      ]'>
-        <div class="box-3d" data-state="closed">
-          <div class="box-face box-front">
-            <div class="box-symbol">🔮</div>
-            <h3>MAGIC BOX</h3>
-            <p>Reveal the Future</p>
-          </div>
           <div class="box-face box-back"></div>
           <div class="box-face box-left"></div>
           <div class="box-face box-right"></div>
           <div class="box-face box-top">
-            <div class="box-lid-symbol">✨</div>
-          </div>
-          <div class="box-face box-bottom"></div>
+            <div class="box-lid-symbol">☠️</div>
         </div>
-        <div class="box-particles"></div>
-      </div>
-    </section>
-
-    <!-- DevOps Team - INFRASTRUCTURE -->
-    <section class="team-section hidden" id="devops-team" data-theme="infra">
-      <div class="team-background" data-bg="infra">
-        <div class="server-icon">🖥️</div>
-        <div class="server-icon">☁️</div>
-      </div>
-      <h2 class="team-title">⚡ INFRASTRUCTURE MAGES ⚡</h2>
-      <p class="team-subtitle">Keepers of the Cloud Realms</p>
-          <audio id="infra-bg-audio" loop preload="auto">
-            <source src="audio/infra-theme.mp3" type="audio/mpeg">
-            <source src="audio/infra-background.mp3" type="audio/mpeg">
-            <source src="https://www.bensound.com/bensound-music/bensound-energy.mp3" type="audio/mpeg">
-          </audio>
-          <audio id="infra-hover-sound" preload="auto">
-            <source src="audio/server-beep.mp3" type="audio/mpeg">
-          </audio>
-          <audio id="starwars-hover-sound" preload="auto">
-            <source src="audio/lightsaber.mp3" type="audio/mpeg">
-          </audio>
-      
-      <!-- 3D Box -->
-      <div class="mystery-box" data-theme="infra" data-animation="power" data-members='[
-        {"name":"⚡ DEPLOY MASTER ⚡","role":"Cloud Mage • Deploy Wizard","power":"My deployments never fail! Zero downtime!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Deploy&backgroundColor=ffaa00"},
-        {"name":"⚡ DOCKER KEEPER ⚡","role":"Container Sorcerer • Docker Master","power":"Everything runs in my containers!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Docker&backgroundColor=ffaa00"},
-        {"name":"⚡ SERVER WARDEN ⚡","role":"Server Keeper • Infrastructure Guard","power":"Servers bow to my command!","image":"https://api.dicebear.com/7.x/avataaars/svg?seed=Server&backgroundColor=ffaa00"}
-      ]'>
-        <div class="box-3d" data-state="closed">
-          <div class="box-face box-front">
-            <div class="box-symbol">⚡</div>
-            <h3>POWER BOX</h3>
-            <p>Unleash the Power</p>
-          </div>
-          <div class="box-face box-back"></div>
-          <div class="box-face box-left"></div>
-          <div class="box-face box-right"></div>
-          <div class="box-face box-top">
-            <div class="box-lid-symbol">☁️</div>
-          </div>
           <div class="box-face box-bottom"></div>
         </div>
         <div class="box-particles"></div>

@@ -570,10 +570,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function getThemeColor(theme) {
     const colors = {
       'starwars': '#ff0000',
-      'fixiki': '#0066ff', // Изменили с green на blue
+      'fixiki': '#0066ff',
       'matrix': '#00ff41',
       'mystics': '#9d4edd',
-      'infra': '#ffd700'
+      'infra': '#ffd700',
+      'royal': '#ffd700',
+      'alchemy': '#ffaa00',
+      'recruiter': '#9d4edd',
+      'oracle': '#8b00ff',
+      'detective': '#4a5568',
+      'exorcist': '#6b46c1',
+      'specter': '#1f2937'
     };
     return colors[theme] || '#ff6600';
   }
@@ -781,7 +788,14 @@ function createHalloweenTitleEffect() {
         'fixiki': document.getElementById('fixiki-hover-sound'),
         'matrix': document.getElementById('matrix-hover-sound'),
         'mystics': document.getElementById('mystics-hover-sound'),
-        'infra': document.getElementById('infra-hover-sound')
+        'infra': document.getElementById('infra-hover-sound'),
+        'royal': null, // Можно добавить hover звук позже
+        'alchemy': null,
+        'recruiter': null,
+        'oracle': null,
+        'detective': null,
+        'exorcist': null,
+        'specter': null
       };
       const audio = soundMap[theme];
       if (audio) {
