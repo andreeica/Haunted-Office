@@ -29,23 +29,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, { once: true });
 
-  // Main title hover effect
+  // Main title hover effect (visual only, без звука)
   mainTitle.addEventListener('mouseenter', () => {
-    playSpookySound();
     createParticles(mainTitle.getBoundingClientRect());
+    createHalloweenTitleEffect();
   });
 
-  // Floating pumpkins hover
-  const pumpkins = document.querySelectorAll('.floating-element');
+  // Floating creatures hover (visual only, без звука)
+  const pumpkins = document.querySelectorAll('.floating-element, .pumpkin, .ghost, .bat');
+  
   pumpkins.forEach(pumpkin => {
     pumpkin.addEventListener('mouseenter', () => {
-      playWitchLaughSound();
+      // Add particle effect
+      createParticles(pumpkin.getBoundingClientRect());
+      
+      // Make it jump
+      pumpkin.style.transform = 'scale(1.5) rotate(20deg) translateY(-20px)';
+      setTimeout(() => {
+        pumpkin.style.transform = '';
+      }, 300);
     });
   });
 
+  // ===== Presentation mode per team (sequential highlighting) =====
+  function presentTeamCards(teamId) {
+    const cards = (flyingCards.get(teamId) || []).slice();
+    if (!cards.length) return;
+    let idx = 0;
+    const run = () => {
+      const card = cards[idx % cards.length];
+      highlightMemberCard(card);
+      idx++;
+    };
+    // run once and then every 2s
+    run();
+    // store interval on team map for possible cleanup
+    const intId = setInterval(run, 2000);
+    // attach to team for cleanup when closing
+    const section = document.getElementById(teamId);
+    if (section) {
+      section.setAttribute('data-presentation-int', String(intId));
+    }
+  }
+
   // Reveal Teams Button Functionality
   revealButton.addEventListener('click', function() {
-    playExplosionSound();
+    playSoftWhoosh();
     
     // Reduce background music volume
     if (backgroundAudio && !backgroundAudio.paused) {
@@ -85,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         section.classList.remove('hidden');
         section.classList.add('visible');
-        playRevealSound();
       }, delay);
       
       delay += 600;
@@ -150,29 +178,28 @@ document.addEventListener('DOMContentLoaded', () => {
         backgroundAudio.volume = 0.05;
       }
       
-      // Get appropriate audio for theme
-      let audio = null;
-      if (theme === 'starwars') {
-        audio = document.getElementById('starwars-bg-audio');
-      } else if (theme === 'fixiki') {
-        audio = document.getElementById('fixiki-bg-audio');
-      } else if (theme === 'matrix') {
-        audio = document.getElementById('matrix-bg-audio');
-      } else if (theme === 'mystics') {
-        audio = document.getElementById('mystics-bg-audio');
-      } else if (theme === 'infra') {
-        audio = document.getElementById('infra-bg-audio');
-      }
-      
+      // Get appropriate audio element for theme (use existing <source> fallbacks)
+      const audioIdMap = {
+        starwars: 'starwars-bg-audio',
+        fixiki: 'fixiki-bg-audio',
+        matrix: 'matrix-bg-audio',
+        mystics: 'mystics-bg-audio',
+        infra: 'infra-bg-audio'
+      };
+      const audio = document.getElementById(audioIdMap[theme]);
       if (audio) {
-        audio.volume = 0.5;
-        audio.play().catch(e => console.log('Audio play error:', e));
+        audio.volume = 0.35;
+        audio.currentTime = 0;
+        audio.play().catch(() => {/* silent */});
         currentTeamAudio = audio;
       }
       
       // Visual effect
       this.style.transform = 'scale(1.02)';
       this.style.boxShadow = '0 0 50px currentColor';
+      
+      // Play theme hover sound
+      playThemeHoverSound(theme);
     });
     
     section.addEventListener('mouseleave', function() {
@@ -224,8 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const theme = boxElement.getAttribute('data-theme');
       const teamId = boxElement.closest('.team-section')?.id || 'unknown';
       
-      // Play opening sound
-      playBoxOpenSound();
+      // Soft open sound (no beeps)
+      playSoftWhoosh();
       
       // Mark box as opened
       boxElement.classList.add('opened');
@@ -246,10 +273,12 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Fly cards out
       members.forEach((member, index) => {
-        setTimeout(() => {
+      setTimeout(() => {
           createFlyingCard(member, boxCenterX, boxCenterY, theme, teamId);
         }, index * 150);
       });
+      // Start presentation sequence after all cards created
+      setTimeout(() => presentTeamCards(teamId), members.length * 180 + 400);
       
     } catch (error) {
       console.error('Error parsing members data:', error);
@@ -271,6 +300,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const boxCenterX = boxRect.left + boxRect.width / 2;
     const boxCenterY = boxRect.top + boxRect.height / 2;
     
+    // Stop presentation timer for the team
+    const section = document.getElementById(teamId);
+    const intAttr = section ? section.getAttribute('data-presentation-int') : null;
+    if (intAttr) {
+      clearInterval(Number(intAttr));
+      section.removeAttribute('data-presentation-int');
+    }
+
     // Animate only this team's cards back to box
     const teamCards = flyingCards.get(teamId) || [];
     teamCards.forEach((card, index) => {
@@ -363,14 +400,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     flyingCards.get(teamId).push(card);
     
-    // Trigger explosion animation
+    // Store member info for highlight
+    card.memberData = member;
+    
+    // Trigger explosion animation with member reveal effect
     setTimeout(() => {
       card.style.animation = `cardFlyOut 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards`;
+      
+      // Highlight this member after reveal
+      setTimeout(() => {
+        highlightMemberCard(card);
+      }, 850 + (cardIndex * 200)); // Stagger highlights
     }, 50);
     
     // After explosion, start floating
     setTimeout(() => {
       const duration = 4 + Math.random() * 3;
+      card.dataset.floatDuration = String(duration);
       card.style.animation = `cardFloatFree ${duration}s ease-in-out infinite`;
     }, 850);
     
@@ -388,49 +434,29 @@ document.addEventListener('DOMContentLoaded', () => {
       card.style.zIndex = '201';
     });
     
-    // Click to play sound AND run away from cursor!
-    card.addEventListener('click', (e) => {
-      if (!card.isDragging) {
-        playCardSound();
-        
-        // Get click position
-        const clickX = e.clientX;
-        const clickY = e.clientY;
-        const cardRect = card.getBoundingClientRect();
-        const cardCenterX = cardRect.left + cardRect.width / 2;
-        const cardCenterY = cardRect.top + cardRect.height / 2;
-        
-        // Calculate direction away from click
-        const dx = cardCenterX - clickX;
-        const dy = cardCenterY - clickY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Normalize and multiply by escape distance
-        const escapeDistance = 200 + Math.random() * 150;
-        const escapeX = (dx / distance) * escapeDistance;
-        const escapeY = (dy / distance) * escapeDistance;
-        
-        // Calculate new position
-        const newX = parseInt(card.style.left) + escapeX;
-        const newY = parseInt(card.style.top) + escapeY;
-        
-        // Keep card within screen bounds
-        const finalX = Math.max(20, Math.min(window.innerWidth - cardRect.width - 20, newX));
-        const finalY = Math.max(20, Math.min(window.innerHeight - cardRect.height - 20, newY));
-        
-        // Animate card to new position
-        card.style.transition = 'all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)';
-        card.style.left = finalX + 'px';
-        card.style.top = finalY + 'px';
-        card.style.transform = 'rotate(' + (Math.random() * 30 - 15) + 'deg) scale(1.1)';
-        
-        // Reset and resume floating after animation
-        setTimeout(() => {
-          card.style.transition = '';
-          const duration = 4 + Math.random() * 3;
-          card.style.animation = `cardFloatFree ${duration}s ease-in-out infinite`;
-          card.style.transform = '';
-        }, 600);
+    // Click to toggle enlargement (без перемещения)
+    card.addEventListener('click', () => {
+      if (card.isDragging) return;
+      const enlarged = card.getAttribute('data-enlarged') === 'true';
+      if (!enlarged) {
+        card.setAttribute('data-enlarged', 'true');
+        card.style.transition = 'transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease';
+        card.style.transform = 'scale(1.25)';
+        card.style.zIndex = '205';
+        card.style.boxShadow = '0 0 120px currentColor';
+        card.style.filter = 'brightness(1.2)';
+        // Stop floating entirely чтобы не тянуло карту
+        card.dataset.prevAnimation = card.style.animation || '';
+        card.style.animation = 'none';
+      } else {
+        card.setAttribute('data-enlarged', 'false');
+        card.style.transform = '';
+        card.style.zIndex = '201';
+        card.style.boxShadow = '';
+        card.style.filter = '';
+        // Resume floating
+        const d = Number(card.dataset.floatDuration || '5');
+        card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
       }
     });
   }
@@ -491,6 +517,14 @@ document.addEventListener('DOMContentLoaded', () => {
       initialX = rect.left;
       initialY = rect.top;
       
+      // cancel enlarge if active
+      if (card.getAttribute('data-enlarged') === 'true') {
+        card.setAttribute('data-enlarged', 'false');
+        card.style.transform = '';
+        card.style.boxShadow = '';
+        card.style.filter = '';
+      }
+      // stop any floating animation during drag
       card.style.animation = 'none';
       card.style.zIndex = '10000';
       
@@ -519,11 +553,11 @@ document.addEventListener('DOMContentLoaded', () => {
         card.isDragging = false;
       }, 100);
       
-      card.style.zIndex = '1000';
+      card.style.zIndex = '201';
       
       // Resume floating animation
-      const duration = 4 + Math.random() * 3;
-      card.style.animation = `cardFloatFree ${duration}s ease-in-out infinite`;
+      const d = Number(card.dataset.floatDuration || '5');
+      card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
       
       document.removeEventListener('mousemove', drag);
       document.removeEventListener('touchmove', drag);
@@ -661,15 +695,13 @@ function createBoxExplosion(rect) {
 // ===== SOUND EFFECTS =====
 
 function playSpookySound() {
-  playSound(300, 0.1, 'sine', 0.3);
+  playSound(240, 0.08, 'triangle', 0.18);
 }
 
-function playExplosionSound() {
-  playSound(100, 0.2, 'sawtooth', 0.5);
-}
-
-function playRevealSound() {
-  playSound(600, 0.1, 'sine', 0.2);
+// Soft whoosh used for CTA and box open
+function playSoftWhoosh() {
+  playSound(140, 0.18, 'sine', 0.18);
+  setTimeout(() => playSound(110, 0.18, 'sine', 0.14), 90);
 }
 
 function playCardSound() {
@@ -708,3 +740,112 @@ function playSound(frequency, duration, type = 'sine', volume = 0.3) {
     // Silent fail if Web Audio API not supported
   }
 }
+
+// Halloween Title Effect
+function createHalloweenTitleEffect() {
+  const titleRect = document.getElementById('main-title').getBoundingClientRect();
+  
+  // Create floating pumpkins
+  for (let i = 0; i < 5; i++) {
+    const pumpkin = document.createElement('div');
+    pumpkin.textContent = ['🎃', '👻', '🦇', '🧙', '⚰️'][Math.floor(Math.random() * 5)];
+    pumpkin.style.position = 'fixed';
+    pumpkin.style.left = (titleRect.left + titleRect.width / 2) + 'px';
+    pumpkin.style.top = (titleRect.top + titleRect.height / 2) + 'px';
+    pumpkin.style.fontSize = '2rem';
+    pumpkin.style.pointerEvents = 'none';
+    pumpkin.style.zIndex = '9999';
+    
+    const angle = (Math.PI * 2 * i) / 5;
+    const distance = 150;
+    const tx = Math.cos(angle) * distance;
+    const ty = Math.sin(angle) * distance;
+    
+    pumpkin.style.transition = 'all 1s ease-out';
+    document.body.appendChild(pumpkin);
+    
+    setTimeout(() => {
+      pumpkin.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random() * 360}deg) scale(0)`;
+      pumpkin.style.opacity = '0';
+    }, 10);
+    
+    setTimeout(() => pumpkin.remove(), 1000);
+  }
+}
+
+  // Play theme hover sound (no beeps fallback)
+  function playThemeHoverSound(theme) {
+    try {
+      const soundMap = {
+        'starwars': document.getElementById('starwars-hover-sound'),
+        'fixiki': document.getElementById('fixiki-hover-sound'),
+        'matrix': document.getElementById('matrix-hover-sound'),
+        'mystics': document.getElementById('mystics-hover-sound'),
+        'infra': document.getElementById('infra-hover-sound')
+      };
+      const audio = soundMap[theme];
+      if (audio) {
+        audio.currentTime = 0;
+        audio.volume = 0.25;
+        audio.play().catch(() => {/* no fallback sound */});
+      }
+    } catch (_) { /* ignore */ }
+  }
+
+// Highlight member card with animation
+function highlightMemberCard(card) {
+  if (!card) return;
+  
+  // Create highlight effect
+  const highlight = document.createElement('div');
+  highlight.style.position = 'absolute';
+  highlight.style.top = '0';
+  highlight.style.left = '0';
+  highlight.style.width = '100%';
+  highlight.style.height = '100%';
+  highlight.style.borderRadius = '20px';
+  highlight.style.background = 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)';
+  highlight.style.pointerEvents = 'none';
+  highlight.style.animation = 'cardHighlight 1s ease-out';
+  highlight.style.zIndex = '10';
+  
+  card.appendChild(highlight);
+  
+  // Make card bigger and brighter
+  card.style.transform = 'scale(1.1)';
+  card.style.filter = 'brightness(1.3)';
+  card.style.zIndex = '203';
+  card.style.boxShadow = '0 0 100px currentColor, 0 0 200px currentColor';
+  
+  // No sound on card highlight
+  
+  // Remove highlight and return to normal
+  setTimeout(() => {
+    highlight.remove();
+    setTimeout(() => {
+      card.style.transform = '';
+      card.style.filter = '';
+      card.style.zIndex = '201';
+      card.style.boxShadow = '';
+    }, 500);
+  }, 1000);
+}
+
+// Add hover effect for tower logo
+document.addEventListener('DOMContentLoaded', () => {
+  const towerLogo = document.querySelector('.team-logo');
+  if (towerLogo) {
+    towerLogo.addEventListener('mouseenter', () => {
+      createHalloweenTitleEffect();
+      
+      // Make tower pulse
+      const tower = document.querySelector('.tower-base');
+      if (tower) {
+        tower.style.animation = 'towerPulse 0.5s ease-out';
+        setTimeout(() => {
+          tower.style.animation = 'towerPulse 3s ease-in-out infinite';
+        }, 500);
+      }
+    });
+  }
+});
