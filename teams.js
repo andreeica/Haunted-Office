@@ -1,4 +1,4 @@
-// 🎃 HAUNTED OFFICE - Main Script 🎃
+// 👥 TEAMS PAGE - Main Script 👥
 document.addEventListener('DOMContentLoaded', () => {
   // Audio elements
   const backgroundAudio = document.getElementById('backgroundAudio');
@@ -13,43 +13,155 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Get elements
   const mainTitle = document.getElementById('main-title');
-  const subtitle = document.getElementById('subtitle');
-  const revealButton = document.getElementById('reveal-button');
-  const hideTeamsButton = document.getElementById('hide-teams-button');
   const teamSections = document.querySelectorAll('.team-section');
   const flyingCardsContainer = document.getElementById('flyingCardsContainer');
   
-  // Start background music on first interaction
+  // Track if background music was started (needed for hover logic)
   let musicStarted = false;
-  document.body.addEventListener('click', function startMusic() {
-    if (!musicStarted && backgroundAudio && backgroundAudio.paused) {
-      backgroundAudio.volume = 0.4;
-      backgroundAudio.play().catch(e => console.log('Auto-play prevented:', e));
-      musicStarted = true;
+  
+  // Start background music automatically on page load
+  if (backgroundAudio) {
+
+    // Try to start music automatically
+    const autoStartMusic = () => {
+      console.log('🎵 Attempting to start music on teams page...', { 
+        musicStarted, 
+        backgroundAudio: !!backgroundAudio, 
+        paused: backgroundAudio?.paused 
+      });
+      if (!musicStarted && backgroundAudio) {
+        backgroundAudio.volume = 0.4;
+        // Try to play regardless of paused state
+        const playPromise = backgroundAudio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              musicStarted = true;
+              console.log('🎵 Music started automatically on teams page');
+            })
+            .catch(err => {
+              console.log('Auto-play prevented, waiting for user interaction:', err);
+              // If autoplay failed, wait for user interaction
+              startMusicOnInteraction();
+            });
+        }
+      } else {
+        console.log('🎵 Music not started:', { musicStarted, hasAudio: !!backgroundAudio });
+      }
+    };
+
+    // Start music on user interaction (fallback if autoplay blocked)
+    const startMusicOnInteraction = () => {
+      const handler = () => {
+        if (!musicStarted && backgroundAudio) {
+          backgroundAudio.volume = 0.4;
+          backgroundAudio.play()
+            .then(() => {
+              musicStarted = true;
+              console.log('🎵 Music started on user interaction');
+            })
+            .catch(err => {
+              console.warn('Music play failed:', err);
+            });
+          // Remove listeners after first play
+          document.removeEventListener('click', handler);
+          document.removeEventListener('touchstart', handler);
+          document.removeEventListener('scroll', handler);
+          document.removeEventListener('mousemove', handler);
+          document.removeEventListener('keydown', handler);
+        }
+      };
+
+      // Try multiple events for better compatibility
+      document.addEventListener('click', handler, { once: true });
+      document.addEventListener('touchstart', handler, { once: true });
+      document.addEventListener('scroll', handler, { once: true });
+      document.addEventListener('mousemove', handler, { once: true });
+      document.addEventListener('keydown', handler, { once: true });
+    };
+
+    // Try multiple times to ensure music starts
+    // First attempt immediately
+    autoStartMusic();
+    
+    // Try after small delay
+    setTimeout(autoStartMusic, 300);
+    
+    // Try after longer delay
+    setTimeout(autoStartMusic, 1000);
+
+    // Also try when audio can play
+    if (backgroundAudio) {
+      const canPlayHandler = () => {
+        console.log('🎵 Audio can play, attempting to start...');
+        if (!musicStarted) {
+          setTimeout(autoStartMusic, 100);
+        }
+      };
+      
+      const loadedDataHandler = () => {
+        console.log('🎵 Audio data loaded, attempting to start...');
+        if (!musicStarted) {
+          setTimeout(autoStartMusic, 200);
+        }
+      };
+      
+      // Remove old listeners if any and add new ones
+      backgroundAudio.addEventListener('canplay', canPlayHandler, { once: true });
+      backgroundAudio.addEventListener('loadeddata', loadedDataHandler, { once: true });
+      backgroundAudio.addEventListener('canplaythrough', () => {
+        console.log('🎵 Audio can play through, attempting to start...');
+        if (!musicStarted) {
+          setTimeout(autoStartMusic, 50);
+        }
+      }, { once: true });
     }
-  }, { once: true });
 
-  // Main title hover effect (visual only, без звука)
-  mainTitle.addEventListener('mouseenter', () => {
-    createParticles(mainTitle.getBoundingClientRect());
-    createHalloweenTitleEffect();
-  });
+    // Also try when page is fully loaded
+    window.addEventListener('load', () => {
+      console.log('🎵 Page loaded, attempting to start music...');
+      if (!musicStarted && backgroundAudio) {
+        setTimeout(autoStartMusic, 100);
+      }
+    }, { once: true });
 
-  // Floating creatures hover (visual only, без звука)
+    // Handle page visibility for audio management
+    document.addEventListener('visibilitychange', () => {
+      if (!backgroundAudio) return;
+      
+      if (document.hidden && !backgroundAudio.paused) {
+        backgroundAudio.pause();
+      } else if (!document.hidden && musicStarted && backgroundAudio.paused) {
+        backgroundAudio.play().catch(() => {});
+      }
+    });
+  }
+
+  // Main title hover effect (visual only, без звука) - only if exists
+  if (mainTitle) {
+    mainTitle.addEventListener('mouseenter', () => {
+      createParticles(mainTitle.getBoundingClientRect());
+      createHalloweenTitleEffect();
+    });
+  }
+
+  // Floating creatures hover (visual only, без звука) - only if they exist
   const pumpkins = document.querySelectorAll('.floating-element, .pumpkin, .ghost, .bat');
   
-  pumpkins.forEach(pumpkin => {
-    pumpkin.addEventListener('mouseenter', () => {
-      // Add particle effect
-      createParticles(pumpkin.getBoundingClientRect());
-      
-      // Make it jump
-      pumpkin.style.transform = 'scale(1.5) rotate(20deg) translateY(-20px)';
-      setTimeout(() => {
-        pumpkin.style.transform = '';
-      }, 300);
+  if (pumpkins.length > 0) {
+    pumpkins.forEach(pumpkin => {
+      pumpkin.addEventListener('mouseenter', () => {
+        // Add particle effect
+        createParticles(pumpkin.getBoundingClientRect());
+        
+        // Make it jump
+        pumpkin.style.transform = 'scale(1.5) rotate(20deg) translateY(-20px)';
+        setTimeout(() => {
+          pumpkin.style.transform = '';
+        }, 300);
+      });
     });
-  });
+  }
 
   // ===== Presentation mode per team (sequential highlighting) =====
   function presentTeamCards(teamId) {
@@ -72,176 +184,142 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Reveal Teams Button Functionality
-  revealButton.addEventListener('click', function() {
-    playSoftWhoosh();
-    
-    // Reduce background music volume
-    if (backgroundAudio && !backgroundAudio.paused) {
-      let volume = backgroundAudio.volume;
-      const fadeOut = setInterval(() => {
-        if (volume > 0.1) {
-          volume -= 0.05;
-          backgroundAudio.volume = volume;
-        } else {
-          clearInterval(fadeOut);
-        }
-      }, 100);
-    }
-    
-    // Create explosion effect
-    createExplosion(this.getBoundingClientRect());
-    
-    // Hide reveal button and show hide button
-    this.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-    this.style.opacity = '0';
-    this.style.transform = 'scale(0.5)';
-    setTimeout(() => {
-      this.style.display = 'none';
-      if (hideTeamsButton) {
-        hideTeamsButton.style.display = 'block';
-        hideTeamsButton.style.opacity = '0';
-        setTimeout(() => {
-          hideTeamsButton.style.transition = 'opacity 0.5s ease';
-          hideTeamsButton.style.opacity = '1';
-        }, 100);
-      }
-    }, 500);
-
-    // Reveal each team section one by one
-    let delay = 0;
-    teamSections.forEach((section, index) => {
-      setTimeout(() => {
-        section.classList.remove('hidden');
-        section.classList.add('visible');
-      }, delay);
-      
-      delay += 600;
-    });
-  });
-
-  // Hide Teams Button Functionality
-  hideTeamsButton.addEventListener('click', function() {
-    playClosingSound();
-    
-    // Close any open box first
-    if (currentOpenBox) {
-      closeBox(currentOpenBox);
-    }
-    
-    // Hide all team sections
+  // Team section hover effects - play theme music - only if sections exist
+  if (teamSections.length > 0) {
     teamSections.forEach(section => {
-      section.classList.remove('visible');
-      section.classList.add('hidden');
-    });
-    
-    // Show reveal button and hide hide button
-    this.style.transition = 'opacity 0.5s ease';
-    this.style.opacity = '0';
-    setTimeout(() => {
-      this.style.display = 'none';
-      revealButton.style.display = 'block';
-      revealButton.style.opacity = '0';
-      setTimeout(() => {
-        revealButton.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        revealButton.style.opacity = '1';
-        revealButton.style.transform = 'scale(1)';
-      }, 100);
-    }, 500);
-    
-    // Restore background music
-    if (backgroundAudio) {
-      let volume = backgroundAudio.volume;
-      const fadeIn = setInterval(() => {
-        if (volume < 0.4) {
-          volume += 0.04;
-          backgroundAudio.volume = volume;
-        } else {
-          clearInterval(fadeIn);
+      const theme = section.getAttribute('data-theme');
+      
+      section.addEventListener('mouseenter', function() {
+        // Stop previous team audio if any
+        if (currentTeamAudio) {
+          currentTeamAudio.pause();
+          currentTeamAudio.currentTime = 0;
         }
-      }, 100);
-    }
-  });
-
-  // Team section hover effects - play theme music
-  teamSections.forEach(section => {
-    const theme = section.getAttribute('data-theme');
-    
-    section.addEventListener('mouseenter', function() {
-      if (currentTeamAudio) {
-        currentTeamAudio.pause();
-        currentTeamAudio.currentTime = 0;
-      }
+        
+        // Pause main background music (or dim it significantly)
+        if (backgroundAudio) {
+          if (!backgroundAudio.paused) {
+            backgroundAudio.volume = 0.05; // Dim instead of pause for smoother transition
+          }
+        }
+        
+        // Get appropriate audio element for theme
+        const audioIdMap = {
+          royal: 'royal-bg-audio',
+          mobile: 'mobile-bg-audio',
+          mystics: 'mystics-bg-audio',
+          alchemy: 'alchemy-bg-audio',
+          recruiter: 'recruiter-bg-audio',
+          oracle: 'oracle-bg-audio',
+          infra: 'infra-bg-audio',
+          detective: 'detective-bg-audio',
+          exorcist: 'exorcist-bg-audio',
+          specter: 'specter-bg-audio',
+          fixiki: 'fixiki-bg-audio',
+          starwars: 'starwars-bg-audio',
+          art: 'art-bg-audio'
+        };
+        
+        const audioId = audioIdMap[theme];
+        if (!audioId) {
+          console.warn(`No audio found for theme: ${theme}`);
+          return;
+        }
+        
+        const audio = document.getElementById(audioId);
+        if (audio) {
+          // Ensure audio is set to loop
+          audio.loop = true;
+          audio.volume = 0.35;
+          audio.currentTime = 0;
+          
+          // Play audio with error handling
+          audio.play()
+            .then(() => {
+              currentTeamAudio = audio;
+              console.log(`🎵 Playing theme music for ${theme}`);
+            })
+            .catch(err => {
+              console.warn(`Failed to play audio for ${theme}:`, err);
+              // Try to start on user interaction
+              const tryPlay = () => {
+                audio.play()
+                  .then(() => {
+                    currentTeamAudio = audio;
+                    console.log(`🎵 Playing theme music for ${theme} (after interaction)`);
+                  })
+                  .catch(() => {/* silent fail */});
+              };
+              document.addEventListener('click', tryPlay, { once: true });
+              document.addEventListener('touchstart', tryPlay, { once: true });
+            });
+        } else {
+          console.warn(`Audio element not found: ${audioId}`);
+        }
+        
+        // Visual effect
+        this.style.transform = 'scale(1.02)';
+        this.style.boxShadow = '0 0 50px currentColor';
+      });
       
-      // Dim main music more
-      if (backgroundAudio && !backgroundAudio.paused) {
-        backgroundAudio.volume = 0.05;
-      }
-      
-      // Get appropriate audio element for theme (use existing <source> fallbacks)
-      const audioIdMap = {
-        starwars: 'starwars-bg-audio',
-        fixiki: 'fixiki-bg-audio',
-        matrix: 'matrix-bg-audio',
-        mystics: 'mystics-bg-audio',
-        infra: 'infra-bg-audio'
-      };
-      const audio = document.getElementById(audioIdMap[theme]);
-      if (audio) {
-        audio.volume = 0.35;
-        audio.currentTime = 0;
-        audio.play().catch(() => {/* silent */});
-        currentTeamAudio = audio;
-      }
-      
-      // Visual effect
-      this.style.transform = 'scale(1.02)';
-      this.style.boxShadow = '0 0 50px currentColor';
-      
-      // Play theme hover sound
-      playThemeHoverSound(theme);
+      section.addEventListener('mouseleave', function() {
+        // Stop team theme music
+        if (currentTeamAudio) {
+          currentTeamAudio.pause();
+          currentTeamAudio.currentTime = 0;
+          currentTeamAudio = null;
+          console.log('🎵 Stopped theme music');
+        }
+        
+        // Resume and restore main background music
+        if (backgroundAudio) {
+          // Restore volume first
+          backgroundAudio.volume = 0.4;
+          
+          // If music was started but is paused, resume it
+          if (musicStarted && backgroundAudio.paused) {
+            backgroundAudio.play()
+              .then(() => {
+                console.log('🎵 Background music resumed after leaving section');
+              })
+              .catch(err => {
+                console.warn('Failed to resume background music:', err);
+              });
+          }
+        }
+        
+        // Remove visual effect
+        this.style.transform = 'scale(1)';
+        this.style.boxShadow = 'none';
+      });
     });
-    
-    section.addEventListener('mouseleave', function() {
-      if (currentTeamAudio) {
-        currentTeamAudio.pause();
-        currentTeamAudio.currentTime = 0;
-      }
-      
-      // Restore main music
-      if (backgroundAudio && !backgroundAudio.paused) {
-        backgroundAudio.volume = 0.1;
-      }
-      
-      this.style.transform = 'scale(1)';
-      this.style.boxShadow = 'none';
-    });
-  });
+  }
 
-  // Mystery Box Click - Open/Close
+  // Mystery Box Click - Open/Close - only if boxes exist
   const mysteryBoxes = document.querySelectorAll('.mystery-box');
   
-  mysteryBoxes.forEach(box => {
-    box.addEventListener('click', function() {
-      const isOpen = this.classList.contains('opened');
-      
-      if (isOpen) {
-        // Close this box
-        closeBox(this);
-      } else {
-        // Close any other open box first
-        if (currentOpenBox && currentOpenBox !== this) {
-          closeBox(currentOpenBox);
+  if (mysteryBoxes.length > 0) {
+    mysteryBoxes.forEach(box => {
+      box.addEventListener('click', function() {
+        const isOpen = this.classList.contains('opened');
+        
+        if (isOpen) {
+          // Close this box
+          closeBox(this);
+        } else {
+          // Close any other open box first
+          if (currentOpenBox && currentOpenBox !== this) {
+            closeBox(currentOpenBox);
+          }
+          // Open this box
+          openBox(this);
         }
-        // Open this box
-        openBox(this);
-      }
+      });
     });
-  });
+  }
 
   // Open Box and Fly Cards Out
   function openBox(boxElement) {
-    const box3d = boxElement.querySelector('.box-3d');
     const membersData = boxElement.getAttribute('data-members');
     
     if (!membersData) return;
@@ -273,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Fly cards out
       members.forEach((member, index) => {
-      setTimeout(() => {
+        setTimeout(() => {
           createFlyingCard(member, boxCenterX, boxCenterY, theme, teamId);
         }, index * 150);
       });
@@ -392,8 +470,13 @@ document.addEventListener('DOMContentLoaded', () => {
       <p class="member-description" style="display: none;">${member.description || ''}</p>
     `;
     
-    // Add to container
-    flyingCardsContainer.appendChild(card);
+    // Add to container - check if exists
+    if (flyingCardsContainer) {
+      flyingCardsContainer.appendChild(card);
+    } else {
+      console.warn('Flying cards container not found');
+      return;
+    }
     
     // Add to the team's cards array
     if (!flyingCards.has(teamId)) {
@@ -610,7 +693,6 @@ document.addEventListener('DOMContentLoaded', () => {
         card.style.top = currentTop + 'px';
         
         // Проверяем не выходит ли за нижний край после увеличения
-        // Ждем пока transition закончится (0.4s), потом проверяем позицию
         setTimeout(() => {
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -622,12 +704,12 @@ document.addEventListener('DOMContentLoaded', () => {
               if (bottomEdge > viewportHeight - 20) {
                 const overflow = bottomEdge - (viewportHeight - 20);
                 const newTop = parseFloat(card.style.top) - overflow;
-                card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease'; // Убираем transition для top
+                card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease';
                 card.style.top = Math.max(20, newTop) + 'px';
               }
             });
           });
-        }, 100); // Быстрая проверка после начала увеличения
+        }, 100);
         
         // Stop floating entirely чтобы не тянуло карту
         card.dataset.prevAnimation = card.style.animation || '';
@@ -702,296 +784,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Get theme color
-  function getThemeColor(theme) {
-    const colors = {
-      'starwars': '#ff0000',
-      'fixiki': '#0066ff',
-      'matrix': '#00ff41',
-      'mystics': '#9d4edd',
-      'infra': '#ffd700',
-      'royal': '#ffd700',
-      'alchemy': '#ffaa00',
-      'recruiter': '#9d4edd',
-      'oracle': '#8b00ff',
-      'detective': '#4a5568',
-      'exorcist': '#6b46c1',
-      'specter': '#1f2937'
-    };
-    return colors[theme] || '#ff6600';
-  }
-
-  // Random green glow pulses on team sections
-  setInterval(() => {
-    const visibleSections = Array.from(teamSections).filter(s => s.classList.contains('visible'));
-    if (visibleSections.length > 0) {
-      const randomSection = visibleSections[Math.floor(Math.random() * visibleSections.length)];
-      randomSection.style.transition = 'all 0.3s ease';
-      randomSection.style.boxShadow = '0 0 60px rgba(0, 255, 0, 0.5)';
-      
-      setTimeout(() => {
-        randomSection.style.boxShadow = 'none';
-      }, 500);
-    }
-  }, 4000);
-
-  console.log('🎵 Haunted Office initialized!');
-});
-
-// ===== PARTICLE EFFECTS =====
-
-function createParticles(rect) {
-  for (let i = 0; i < 15; i++) {
-    const particle = document.createElement('div');
-    particle.style.position = 'fixed';
-    particle.style.left = (rect.left + rect.width / 2) + 'px';
-    particle.style.top = (rect.top + rect.height / 2) + 'px';
-    particle.style.width = '6px';
-    particle.style.height = '6px';
-    particle.style.borderRadius = '50%';
-    particle.style.background = `hsl(${Math.random() * 60 + 15}, 100%, 50%)`;
-    particle.style.pointerEvents = 'none';
-    particle.style.zIndex = '9999';
-    
-    const angle = (Math.PI * 2 * i) / 15;
-    const velocity = 100 + Math.random() * 50;
-    const tx = Math.cos(angle) * velocity;
-    const ty = Math.sin(angle) * velocity;
-    
-    particle.style.transition = 'all 0.6s ease-out';
-    document.body.appendChild(particle);
-    
-    setTimeout(() => {
-      particle.style.transform = `translate(${tx}px, ${ty}px)`;
-      particle.style.opacity = '0';
-    }, 10);
-    
-    setTimeout(() => particle.remove(), 600);
-  }
-}
-
-function createExplosion(rect) {
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  
-  for (let i = 0; i < 50; i++) {
-    const particle = document.createElement('div');
-    particle.style.position = 'fixed';
-    particle.style.left = centerX + 'px';
-    particle.style.top = centerY + 'px';
-    particle.style.width = '10px';
-    particle.style.height = '10px';
-    particle.style.borderRadius = '50%';
-    particle.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-    particle.style.pointerEvents = 'none';
-    particle.style.zIndex = '9999';
-    particle.style.boxShadow = `0 0 10px ${particle.style.background}`;
-    
-    const angle = (Math.PI * 2 * i) / 50;
-    const velocity = 200 + Math.random() * 200;
-    const tx = Math.cos(angle) * velocity;
-    const ty = Math.sin(angle) * velocity;
-    
-    particle.style.transition = 'all 1s ease-out';
-    document.body.appendChild(particle);
-    
-    setTimeout(() => {
-      particle.style.transform = `translate(${tx}px, ${ty}px)`;
-      particle.style.opacity = '0';
-    }, 10);
-    
-    setTimeout(() => particle.remove(), 1000);
-  }
-}
-
-function createBoxExplosion(rect) {
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  
-  for (let i = 0; i < 30; i++) {
-    const particle = document.createElement('div');
-    particle.textContent = ['✨', '🌟', '⭐', '💫', '🔮'][Math.floor(Math.random() * 5)];
-    particle.style.position = 'fixed';
-    particle.style.left = centerX + 'px';
-    particle.style.top = centerY + 'px';
-    particle.style.fontSize = '1.5rem';
-    particle.style.pointerEvents = 'none';
-    particle.style.zIndex = '9999';
-    
-    const angle = (Math.PI * 2 * i) / 30;
-    const velocity = 150 + Math.random() * 150;
-    const tx = Math.cos(angle) * velocity;
-    const ty = Math.sin(angle) * velocity;
-    
-    particle.style.transition = 'all 1s ease-out';
-    document.body.appendChild(particle);
-    
-    setTimeout(() => {
-      particle.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random() * 720}deg)`;
-      particle.style.opacity = '0';
-    }, 10);
-    
-    setTimeout(() => particle.remove(), 1000);
-  }
-}
-
-// ===== SOUND EFFECTS =====
-
-function playSpookySound() {
-  playSound(240, 0.08, 'triangle', 0.18);
-}
-
-// Soft whoosh used for CTA and box open
-function playSoftWhoosh() {
-  playSound(140, 0.18, 'sine', 0.18);
-  setTimeout(() => playSound(110, 0.18, 'sine', 0.14), 90);
-}
-
-function playCardSound() {
-  playSound(800, 0.05, 'sine', 0.15);
-}
-
-function playBoxOpenSound() {
-  playSound(400, 0.3, 'triangle', 0.4);
-  setTimeout(() => playSound(600, 0.2, 'sine', 0.3), 100);
-}
-
-function playClosingSound() {
-  // Убран противный звук закрытия
-}
-
-function playWitchLaughSound() {
-  playSound(150, 0.15, 'sawtooth', 0.2);
-}
-
-function playSound(frequency, duration, type = 'sine', volume = 0.3) {
-  try {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.value = frequency;
-    oscillator.type = type;
-    gainNode.gain.value = volume;
-    
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + duration);
-  } catch (e) {
-    // Silent fail if Web Audio API not supported
-  }
-}
-
-// Halloween Title Effect
-function createHalloweenTitleEffect() {
-  const titleRect = document.getElementById('main-title').getBoundingClientRect();
-  
-  // Create floating pumpkins
-  for (let i = 0; i < 5; i++) {
-    const pumpkin = document.createElement('div');
-    pumpkin.textContent = ['🎃', '👻', '🦇', '🧙', '⚰️'][Math.floor(Math.random() * 5)];
-    pumpkin.style.position = 'fixed';
-    pumpkin.style.left = (titleRect.left + titleRect.width / 2) + 'px';
-    pumpkin.style.top = (titleRect.top + titleRect.height / 2) + 'px';
-    pumpkin.style.fontSize = '2rem';
-    pumpkin.style.pointerEvents = 'none';
-    pumpkin.style.zIndex = '9999';
-    
-    const angle = (Math.PI * 2 * i) / 5;
-    const distance = 150;
-    const tx = Math.cos(angle) * distance;
-    const ty = Math.sin(angle) * distance;
-    
-    pumpkin.style.transition = 'all 1s ease-out';
-    document.body.appendChild(pumpkin);
-    
-    setTimeout(() => {
-      pumpkin.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random() * 360}deg) scale(0)`;
-      pumpkin.style.opacity = '0';
-    }, 10);
-    
-    setTimeout(() => pumpkin.remove(), 1000);
-  }
-}
-
-  // Play theme hover sound (no beeps fallback)
-  function playThemeHoverSound(theme) {
-    try {
-      const soundMap = {
-        'starwars': document.getElementById('starwars-hover-sound'),
-        'fixiki': document.getElementById('fixiki-hover-sound'),
-        'matrix': document.getElementById('matrix-hover-sound'),
-        'mystics': document.getElementById('mystics-hover-sound'),
-        'infra': document.getElementById('infra-hover-sound'),
-        'royal': null, // Можно добавить hover звук позже
-        'alchemy': null,
-        'recruiter': null,
-        'oracle': null,
-        'detective': null,
-        'exorcist': null,
-        'specter': null
-      };
-      const audio = soundMap[theme];
-      if (audio) {
-        audio.currentTime = 0;
-        audio.volume = 0.25;
-        audio.play().catch(() => {/* no fallback sound */});
+  // Random green glow pulses on team sections - only if sections exist
+  if (teamSections.length > 0) {
+    setInterval(() => {
+      const visibleSections = Array.from(teamSections).filter(s => s.classList.contains('visible'));
+      if (visibleSections.length > 0) {
+        const randomSection = visibleSections[Math.floor(Math.random() * visibleSections.length)];
+        randomSection.style.transition = 'all 0.3s ease';
+        randomSection.style.boxShadow = '0 0 60px rgba(0, 255, 0, 0.5)';
+        
+        setTimeout(() => {
+          randomSection.style.boxShadow = 'none';
+        }, 500);
       }
-    } catch (_) { /* ignore */ }
+    }, 4000);
   }
 
-// Highlight member card with animation
-function highlightMemberCard(card) {
-  if (!card) return;
-  // Если пользователь уже увеличил карточку — пропускаем авто‑highlight
-  if (card.getAttribute('data-enlarged') === 'true' || card.dataset.userEnlarged === 'true') {
-    return;
-  }
-  
-  // Create highlight effect
-  const highlight = document.createElement('div');
-  highlight.style.position = 'absolute';
-  highlight.style.top = '0';
-  highlight.style.left = '0';
-  highlight.style.width = '100%';
-  highlight.style.height = '100%';
-  highlight.style.borderRadius = '20px';
-  highlight.style.background = 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)';
-  highlight.style.pointerEvents = 'none';
-  highlight.style.animation = 'cardHighlight 1s ease-out';
-  highlight.style.zIndex = '10';
-  
-  card.appendChild(highlight);
-  
-  // Make card bigger and brighter
-  card.style.transform = 'scale(1.1)';
-  card.style.filter = 'brightness(1.3)';
-  card.style.zIndex = '203';
-  card.style.boxShadow = '0 0 100px currentColor, 0 0 200px currentColor';
-  
-  // No sound on card highlight
-  
-  // Remove highlight and return to normal
-  const timeout1 = setTimeout(() => {
-    highlight.remove();
-    const timeout2 = setTimeout(() => {
-      // Не меняем стили если карточка уже увеличена пользователем
-      if (card.getAttribute('data-enlarged') !== 'true') {
-        card.style.transform = '';
-        card.style.filter = '';
-        card.style.zIndex = '201';
-        card.style.boxShadow = '';
-      }
-    }, 100); // Уменьшено с 200ms
-    card._highlightTimeout2 = timeout2;
-  }, 200); // Уменьшено с 400ms
-  card._highlightTimeout1 = timeout1;
-}
-
-// Add hover effect for tower logo
-document.addEventListener('DOMContentLoaded', () => {
+  // Add hover effect for tower logo
   const towerLogo = document.querySelector('.team-logo');
   if (towerLogo) {
     towerLogo.addEventListener('mouseenter', () => {
@@ -1003,8 +812,24 @@ document.addEventListener('DOMContentLoaded', () => {
         tower.style.animation = 'towerPulse 0.5s ease-out';
         setTimeout(() => {
           tower.style.animation = 'towerPulse 3s ease-in-out infinite';
-    }, 500);
+        }, 500);
       }
     });
   }
+
+  // Scroll to Top Button
+  const scrollToTopBtn = document.getElementById('scrollToTop');
+  
+  if (scrollToTopBtn) {
+    // Scroll to top on click - button is always visible
+    scrollToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  }
+
+  console.log('👥 Teams page initialized!');
 });
+
