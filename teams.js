@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
-  
+
   // Open Box and Fly Cards Out
   function openBox(boxElement) {
     const membersData = boxElement.getAttribute('data-members');
