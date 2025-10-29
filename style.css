@@ -1099,6 +1099,39 @@ body {
   line-height: 1.2;
 }
 
+/* Enlarged Card Styles - раскрытая карточка */
+.flying-card.enlarged {
+  width: 350px !important;
+  min-height: 480px;
+  padding: 2rem;
+}
+
+.flying-card.enlarged img {
+  width: 150px !important;
+  height: 150px !important;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 30px currentColor;
+}
+
+.flying-card.enlarged h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.flying-card.enlarged .member-role {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  color: #ccc;
+}
+
+.flying-card.enlarged .member-power {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}
+
 /* Card Explosion Animation */
 @keyframes cardFlyOut {
   0% {

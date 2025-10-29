@@ -360,8 +360,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const row = Math.floor(cardIndex / cardsPerRow);
     
     const gridStartX = centerX - (cardsPerRow * (cardWidth + spacing)) / 2 + spacing;
-    const gridStartY = centerY - cardHeight / 2;
-    
+    const gridStartY = centerY - cardHeight / 2 - 150; // Поднимаем карточки выше на 150px
+
     const targetX = gridStartX + col * (cardWidth + spacing);
     const targetY = gridStartY + row * (cardHeight + 30);
     
@@ -434,23 +434,36 @@ document.addEventListener('DOMContentLoaded', () => {
       card.style.zIndex = '201';
     });
     
-    // Click to toggle enlargement (без перемещения)
+    // Click to toggle enlargement (с раскрытием текста)
     card.addEventListener('click', () => {
       if (card.isDragging) return;
       const enlarged = card.getAttribute('data-enlarged') === 'true';
       if (!enlarged) {
         card.setAttribute('data-enlarged', 'true');
-        card.style.transition = 'transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease';
-        card.style.transform = 'scale(1.25)';
+        card.classList.add('enlarged');
+        card.style.transition = 'all 0.4s ease';
+        card.style.transform = 'scale(1.6)';
+        card.style.width = '350px';
+        card.style.height = 'auto';
+        card.style.minHeight = '480px';
         card.style.zIndex = '205';
-        card.style.boxShadow = '0 0 120px currentColor';
-        card.style.filter = 'brightness(1.2)';
+        card.style.boxShadow = '0 0 150px currentColor, 0 0 200px currentColor';
+        card.style.filter = 'brightness(1.3)';
         // Stop floating entirely чтобы не тянуло карту
         card.dataset.prevAnimation = card.style.animation || '';
         card.style.animation = 'none';
+        // Показываем весь текст
+        const roleEl = card.querySelector('.member-role');
+        const powerEl = card.querySelector('.member-power');
+        if (roleEl) roleEl.style.display = 'block';
+        if (powerEl) powerEl.style.display = 'block';
       } else {
         card.setAttribute('data-enlarged', 'false');
+        card.classList.remove('enlarged');
         card.style.transform = '';
+        card.style.width = '';
+        card.style.height = '';
+        card.style.minHeight = '';
         card.style.zIndex = '201';
         card.style.boxShadow = '';
         card.style.filter = '';
@@ -473,9 +486,14 @@ document.addEventListener('DOMContentLoaded', () => {
     card.style.setProperty('--start-x', dx + 'px');
     card.style.setProperty('--start-y', dy + 'px');
     
-    // Stop any animations
+    // Stop any animations and reset enlarged state
     card.style.animation = '';
     card.style.transition = '';
+    card.setAttribute('data-enlarged', 'false');
+    card.classList.remove('enlarged');
+    card.style.width = '';
+    card.style.height = '';
+    card.style.minHeight = '';
     
     // Animate back to box
     card.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
@@ -721,7 +739,7 @@ function playBoxOpenSound() {
 }
 
 function playClosingSound() {
-  playSound(200, 0.2, 'sawtooth', 0.3);
+  // Убран противный звук закрытия
 }
 
 function playWitchLaughSound() {
