@@ -1102,8 +1102,9 @@ body {
 /* Enlarged Card Styles - раскрытая карточка */
 .flying-card.enlarged {
   width: 350px !important;
-  min-height: 480px;
+  min-height: 520px;
   padding: 2rem;
+  z-index: 210 !important; /* Поверх всех */
 }
 
 .flying-card.enlarged img {
@@ -1130,6 +1131,24 @@ body {
   font-size: 1.1rem;
   line-height: 1.6;
   margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.flying-card .member-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #aaa;
+  font-style: italic;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.flying-card.enlarged .member-description {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #bbb;
+  margin-top: 1.5rem;
 }
 
 /* Card Explosion Animation */

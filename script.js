@@ -389,6 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <h3>${member.name}</h3>
       <p class="member-role">${member.role}</p>
       <p class="member-power">"${member.power}"</p>
+      <p class="member-description" style="display: none;">${member.description || ''}</p>
     `;
     
     // Add to container
@@ -423,15 +424,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make card draggable
     makeDraggable(card);
     
-    // Gentle hover effect instead of pulse
+    // Gentle hover effect instead of pulse (не для увеличенных карточек)
     card.addEventListener('mouseenter', () => {
-      card.style.transform = 'scale(1.05)';
-      card.style.zIndex = '202';
+      if (card.getAttribute('data-enlarged') !== 'true') {
+        card.style.transform = 'scale(1.05)';
+        card.style.zIndex = '202';
+      }
     });
     
     card.addEventListener('mouseleave', () => {
-      card.style.transform = '';
-      card.style.zIndex = '201';
+      if (card.getAttribute('data-enlarged') !== 'true') {
+        card.style.transform = '';
+        card.style.zIndex = '201';
+      }
     });
     
   }
@@ -543,29 +548,107 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     
+    function closeAllOtherCards() {
+      // Закрываем все другие увеличенные карточки
+      const allCards = document.querySelectorAll('.flying-card');
+      allCards.forEach(otherCard => {
+        if (otherCard !== card && otherCard.getAttribute('data-enlarged') === 'true') {
+          otherCard.setAttribute('data-enlarged', 'false');
+          otherCard.classList.remove('enlarged');
+          otherCard.style.transform = '';
+          otherCard.style.width = '';
+          otherCard.style.height = '';
+          otherCard.style.minHeight = '';
+          otherCard.style.zIndex = '201';
+          otherCard.style.boxShadow = '';
+          otherCard.style.filter = '';
+          // Resume floating
+          const d = Number(otherCard.dataset.floatDuration || '5');
+          otherCard.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
+          // Скрываем description
+          const descEl = otherCard.querySelector('.member-description');
+          if (descEl) descEl.style.display = 'none';
+        }
+      });
+    }
+    
     function toggleCardEnlarge() {
       const enlarged = card.getAttribute('data-enlarged') === 'true';
       if (!enlarged) {
+        // Закрываем все другие карточки
+        closeAllOtherCards();
+        
+        // Сохраняем текущую позицию из style (реальные значения)
+        const currentLeft = parseFloat(card.style.left) || 0;
+        const currentTop = parseFloat(card.style.top) || 0;
+        
+        // Сохраняем исходную позицию для восстановления при закрытии
+        card.dataset.originalLeft = currentLeft.toString();
+        card.dataset.originalTop = currentTop.toString();
+        
         card.setAttribute('data-enlarged', 'true');
+        card.dataset.userEnlarged = 'true';
         card.classList.add('enlarged');
+        
+        // Отменяем любые активные highlight эффекты
+        if (card._highlightTimeout1) clearTimeout(card._highlightTimeout1);
+        if (card._highlightTimeout2) clearTimeout(card._highlightTimeout2);
+        const highlightElements = card.querySelectorAll('[style*="animation: cardHighlight"]');
+        highlightElements.forEach(el => el.remove());
+        
         card.style.transition = 'all 0.4s ease';
-        card.style.transform = 'scale(1.6)';
         card.style.width = '350px';
         card.style.height = 'auto';
-        card.style.minHeight = '480px';
-        card.style.zIndex = '205';
+        card.style.minHeight = '520px';
+        card.style.zIndex = '210';
         card.style.boxShadow = '0 0 150px currentColor, 0 0 200px currentColor';
         card.style.filter = 'brightness(1.3)';
+        card.style.transform = 'scale(1.6)';
+        
+        // Оставляем карточку на месте
+        card.style.left = currentLeft + 'px';
+        card.style.top = currentTop + 'px';
+        
+        // Проверяем не выходит ли за нижний край после увеличения
+        // Ждем пока transition закончится (0.4s), потом проверяем позицию
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              const cardRect = card.getBoundingClientRect();
+              const bottomEdge = cardRect.bottom;
+              const viewportHeight = window.innerHeight;
+              
+              // Если выходит за нижний край - немного поднимаем без transition
+              if (bottomEdge > viewportHeight - 20) {
+                const overflow = bottomEdge - (viewportHeight - 20);
+                const newTop = parseFloat(card.style.top) - overflow;
+                card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease'; // Убираем transition для top
+                card.style.top = Math.max(20, newTop) + 'px';
+              }
+            });
+          });
+        }, 100); // Быстрая проверка после начала увеличения
+        
         // Stop floating entirely чтобы не тянуло карту
         card.dataset.prevAnimation = card.style.animation || '';
         card.style.animation = 'none';
-        // Показываем весь текст
+        // Показываем весь текст и description
         const roleEl = card.querySelector('.member-role');
         const powerEl = card.querySelector('.member-power');
+        const descEl = card.querySelector('.member-description');
         if (roleEl) roleEl.style.display = 'block';
         if (powerEl) powerEl.style.display = 'block';
+        if (descEl && descEl.textContent.trim()) descEl.style.display = 'block';
       } else {
+        // Восстанавливаем исходную позицию
+        const originalLeft = card.dataset.originalLeft;
+        const originalTop = card.dataset.originalTop;
+        
+        if (originalLeft) card.style.left = originalLeft + 'px';
+        if (originalTop) card.style.top = originalTop + 'px';
+        
         card.setAttribute('data-enlarged', 'false');
+        delete card.dataset.userEnlarged;
         card.classList.remove('enlarged');
         card.style.transform = '';
         card.style.width = '';
@@ -577,6 +660,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Resume floating
         const d = Number(card.dataset.floatDuration || '5');
         card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
+        // Скрываем description
+        const descEl = card.querySelector('.member-description');
+        if (descEl) descEl.style.display = 'none';
       }
     }
     
@@ -859,6 +945,10 @@ function createHalloweenTitleEffect() {
 // Highlight member card with animation
 function highlightMemberCard(card) {
   if (!card) return;
+  // Если пользователь уже увеличил карточку — пропускаем авто‑highlight
+  if (card.getAttribute('data-enlarged') === 'true' || card.dataset.userEnlarged === 'true') {
+    return;
+  }
   
   // Create highlight effect
   const highlight = document.createElement('div');
@@ -884,15 +974,20 @@ function highlightMemberCard(card) {
   // No sound on card highlight
   
   // Remove highlight and return to normal
-  setTimeout(() => {
+  const timeout1 = setTimeout(() => {
     highlight.remove();
-    setTimeout(() => {
-      card.style.transform = '';
-      card.style.filter = '';
-      card.style.zIndex = '201';
-      card.style.boxShadow = '';
-    }, 500);
-  }, 1000);
+    const timeout2 = setTimeout(() => {
+      // Не меняем стили если карточка уже увеличена пользователем
+      if (card.getAttribute('data-enlarged') !== 'true') {
+        card.style.transform = '';
+        card.style.filter = '';
+        card.style.zIndex = '201';
+        card.style.boxShadow = '';
+      }
+    }, 100); // Уменьшено с 200ms
+    card._highlightTimeout2 = timeout2;
+  }, 200); // Уменьшено с 400ms
+  card._highlightTimeout1 = timeout1;
 }
 
 // Add hover effect for tower logo
@@ -908,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tower.style.animation = 'towerPulse 0.5s ease-out';
         setTimeout(() => {
           tower.style.animation = 'towerPulse 3s ease-in-out infinite';
-        }, 500);
+    }, 500);
       }
     });
   }
