@@ -210,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
           mystics: 'mystics-bg-audio',
           alchemy: 'alchemy-bg-audio',
           recruiter: 'recruiter-bg-audio',
+          support: 'support-bg-audio',
           oracle: 'oracle-bg-audio',
           infra: 'infra-bg-audio',
           detective: 'detective-bg-audio',
