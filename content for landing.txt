@@ -12,10 +12,9 @@ Backend (старворс):
 4) Vladimir - Feels backend power like a Jedi, slicing through bugs and coding in the shadows of the galaxy.
 
 BA (малефисента):
-
-1) Alexandrina — Foresees requirements before clients finish their spells.
-2) Alexandra — Answers questions with grace and sometimes sarcasm, but demands a quick massage every time.  
-3) Anton  — Untangles requirement messes like a wizard decoding ancient spells.
+Alexandrina — she foresees client needs and make complex business spells to guide the team to success.
+Alexandra — charming and sacrastic, she breaks down business processes every time she wants
+Anton — A magic who clears tangled requirements with precision, bringing clarity and order to the project chaos.
 
 DevOps (гарри поттер):
 
@@ -68,3 +67,6 @@ HR (винкс);
 Automation( ведьмак)
 
 1) Like a true Witcher, he hunts down the most elusive bugs with deadly accuracy
+
+alex titorenco
+1) Mastering all four elements, he masters all aspects to unite stakeholders and navigate challenges
