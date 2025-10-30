@@ -619,7 +619,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const col = cardIndex % cardsPerRow;
     const row = Math.floor(cardIndex / cardsPerRow);
     
-    const gridStartX = centerX - (cardsPerRow * (cardWidth + spacing)) / 2 + spacing;
+    // Улучшенное центрирование - карточки симметрично относительно центра, смещены чуть левее
+    const totalGridWidth = (cardsPerRow * (cardWidth + spacing)) - spacing;
+    const gridStartX = centerX - totalGridWidth / 2 - 30; // Смещаем левее на 30px для лучшего центрирования
     const gridStartY = centerY - cardHeight / 2 - 150; // Поднимаем карточки выше на 150px
 
     const targetX = gridStartX + col * (cardWidth + spacing);
@@ -940,32 +942,47 @@ document.addEventListener('DOMContentLoaded', () => {
         highlightElements.forEach(el => el.remove());
         
         card.style.transition = 'all 0.4s ease';
-        card.style.width = '320px';
+        card.style.width = '360px';
         card.style.height = 'auto';
-        card.style.minHeight = '410px';
+        card.style.minHeight = '450px';
         card.style.zIndex = '210';
         card.style.boxShadow = '0 0 60px rgba(0,0,0,0.6), 0 0 90px currentColor';
         card.style.filter = 'none';
-        card.style.opacity = '1'; // Убеждаемся что увеличенная карточка полностью видна
-        card.style.transform = 'scale(1.3)';
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1.5)';
         // Подвинуть текст ниже при раскрытой карточке
-        card.style.paddingTop = '4rem';
-        // Поставить картинку на фон и скрыть аватарку
+        card.style.paddingTop = '3.5rem';
+        // В большой карточке скрываем круглый аватар, показываем только фон с лицом
         const imgEl = card.querySelector('img');
         if (imgEl) {
-          imgEl.style.display = 'none';
+          imgEl.style.display = 'none'; // Скрываем круглый аватар в большой карточке
         }
         const bgUrl = card.memberData?.image || card.memberData?.avatar || '';
         if (bgUrl) {
-          // Сбрасываем фон из базовых стилей и делаем более прозрачный оверлей
+          // Определяем вертикальные фото (Pavel, Daniela) для правильного background-size
+          const memberName = (card.memberData?.name || '').toLowerCase();
+          const isVerticalPhoto = memberName.includes('croitor') || memberName.includes('pavel') || 
+                                  memberName.includes('daniela') || memberName.includes('aftenii');
+          
+          // Фон с более светлым градиентом чтобы лицо было хорошо видно
           card.style.background = 'none';
-          card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.55)), url(${bgUrl})`;
-          // Градиент и изображение покрывают всю карточку (может быть небольшая обрезка)
-          card.style.backgroundSize = 'cover, cover';
-          card.style.backgroundPosition = 'center, center';
+          card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.4)), url(${bgUrl})`;
+          
+          // Для вертикальных фото используем другой background-size чтобы сохранить пропорции
+          if (isVerticalPhoto) {
+            // Используем contain для вертикальных фото чтобы сохранить пропорции
+            card.style.backgroundSize = 'contain, contain';
+            card.style.backgroundPosition = 'center top, center top'; // Позиционируем сверху чтобы лицо было видно
+          } else {
+            // Для обычных фото используем cover
+            card.style.backgroundSize = 'cover, cover';
+            card.style.backgroundPosition = 'center center, center center';
+          }
+          
           card.style.backgroundRepeat = 'no-repeat, no-repeat';
-          card.style.backgroundBlendMode = 'multiply';
+          card.style.backgroundBlendMode = 'normal'; // Убираем multiply для лучшей видимости
           card.style.color = '#ffffff';
+          card.style.textShadow = '0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6)'; // Лучшая читаемость текста
         }
         
         // Оставляем карточку на месте

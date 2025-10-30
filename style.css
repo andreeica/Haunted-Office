@@ -997,7 +997,7 @@ body.home-page .feature-icon {
     transform: translateY(0) rotate(0deg) scale(1); 
   }
   50% { 
-    opacity: 1; 
+  opacity: 1;
     transform: translateY(-30px) rotate(15deg) scale(1.15); 
   }
 }
@@ -1231,12 +1231,12 @@ body.home-page .feature-icon {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  opacity: 0;
+    opacity: 0;
   transition: opacity 0.5s;
-}
+  }
 
 .mystery-box:hover .box-particles {
-  opacity: 1;
+    opacity: 1;
 }
 
 /* Thematic Colors for Boxes */
@@ -1424,17 +1424,14 @@ body.home-page .feature-icon {
 
 /* Enlarged Card Styles - раскрытая карточка */
 .flying-card.enlarged {
-  width: 320px !important;
-  min-height: 410px !important;
+  width: 360px !important;
+  min-height: 450px !important;
   padding: 1.5rem;
   z-index: 210 !important; /* Поверх всех */
 }
 
 .flying-card.enlarged img {
-  width: 120px !important;
-  height: 120px !important;
-  margin-bottom: 1rem;
-  box-shadow: 0 0 25px currentColor;
+  display: none !important; /* Скрываем круглый аватар в большой карточке */
 }
 
 .flying-card.enlarged h3 {
@@ -1667,7 +1664,7 @@ footer p:last-child {
   }
   
   .flying-card h3 {
-    font-size: 1rem;
+  font-size: 1rem;
   }
 }
 
@@ -1736,7 +1733,7 @@ footer p:last-child {
   }
   
   .ghost, .bat, .pumpkin {
-    display: none;
+  display: none;
   }
 
   .mystery-box {
