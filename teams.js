@@ -19,6 +19,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Track if background music was started (needed for hover logic)
   let musicStarted = false;
   
+  // Устанавливаем зацикливание для фоновой музыки
+  if (backgroundAudio) {
+    backgroundAudio.loop = true;
+    
+    // Дополнительная защита: если loop не сработает, перезапускаем вручную
+    const ensureBackgroundLoop = () => {
+      // Если фоновая музыка должна играть, перезапускаем её
+      if (musicStarted) {
+        backgroundAudio.currentTime = 0;
+        backgroundAudio.play().catch(() => {/* silent fail */});
+      }
+    };
+    
+    // Удаляем старый обработчик, если есть
+    if (backgroundAudio._loopHandler) {
+      backgroundAudio.removeEventListener('ended', backgroundAudio._loopHandler);
+    }
+    // Создаем новый обработчик и сохраняем ссылку
+    backgroundAudio._loopHandler = ensureBackgroundLoop;
+    backgroundAudio.addEventListener('ended', ensureBackgroundLoop);
+  }
+  
   // Start background music automatically on page load
   if (backgroundAudio) {
 
@@ -212,6 +234,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       if (currentTeamAudio) {
+        // Удаляем обработчик зацикливания перед остановкой
+        if (currentTeamAudio._loopHandler) {
+          currentTeamAudio.removeEventListener('ended', currentTeamAudio._loopHandler);
+          delete currentTeamAudio._loopHandler;
+        }
         currentTeamAudio.pause();
         currentTeamAudio.currentTime = 0;
         currentTeamAudio = null;
@@ -277,9 +304,25 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const audio = document.getElementById(audioId);
       if (audio) {
+        // Устанавливаем зацикливание
         audio.loop = true;
         audio.volume = 0.35;
         audio.currentTime = 0;
+        
+        // Дополнительная защита: если loop не сработает, перезапускаем вручную
+        const ensureLoop = () => {
+          // Если это текущая музыка команды, продолжаем зацикливание
+          if (currentTeamAudio === audio) {
+            audio.currentTime = 0;
+            audio.play().catch(() => {/* silent fail */});
+          }
+        };
+        
+        // Удаляем старый обработчик, если есть
+        audio.removeEventListener('ended', audio._loopHandler);
+        // Создаем новый обработчик и сохраняем ссылку
+        audio._loopHandler = ensureLoop;
+        audio.addEventListener('ended', ensureLoop);
         
         audio.play()
           .then(() => {
@@ -287,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sectionElement) {
               activeSection = sectionElement;
             }
-            console.log(`🎵 Playing theme music for ${theme}`);
+            console.log(`🎵 Playing theme music for ${theme} (looped)`);
           })
           .catch(err => {
             console.warn(`Failed to play audio for ${theme}:`, err);
