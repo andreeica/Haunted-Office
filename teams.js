@@ -184,115 +184,176 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Team section hover effects - play theme music - only if sections exist
+  // Team section click effects - play theme music - only if sections exist
+  let activeSection = null; // Отслеживаем активную секцию (глобально для доступа из других функций)
   if (teamSections.length > 0) {
+    
+    // Функция для проверки наличия открытых увеличенных карточек из секции
+    function hasEnlargedCardsFromSection(sectionId) {
+      if (!sectionId) return false;
+      const allCards = document.querySelectorAll('.flying-card');
+      for (let card of allCards) {
+        if (card.getAttribute('data-enlarged') === 'true' && 
+            card.dataset.teamId === sectionId) {
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    // Функция для остановки музыки команды
+    function stopTeamAudio() {
+      // Проверяем, есть ли открытые карточки из активной секции
+      if (activeSection) {
+        const sectionId = activeSection.id;
+        if (hasEnlargedCardsFromSection(sectionId)) {
+          // Если есть открытые карточки - не останавливаем музыку
+          return;
+        }
+      }
+      if (currentTeamAudio) {
+        currentTeamAudio.pause();
+        currentTeamAudio.currentTime = 0;
+        currentTeamAudio = null;
+      }
+      
+      // Восстанавливаем фоновую музыку
+      if (backgroundAudio) {
+        backgroundAudio.volume = 0.4;
+        if (musicStarted && backgroundAudio.paused) {
+          backgroundAudio.play()
+            .then(() => {
+              console.log('🎵 Background music resumed');
+            })
+            .catch(() => {/* silent fail */});
+        }
+      }
+      
+      // Сбрасываем визуальные эффекты всех секций
+      teamSections.forEach(s => {
+        s.style.transform = 'scale(1)';
+        s.style.boxShadow = 'none';
+      });
+    }
+    
+    // Функция для запуска музыки секции по theme
+    function playTeamAudio(theme, sectionElement) {
+      // Останавливаем предыдущую музыку
+      if (currentTeamAudio) {
+        currentTeamAudio.pause();
+        currentTeamAudio.currentTime = 0;
+        currentTeamAudio = null;
+      }
+      
+      // Останавливаем или сильно приглушаем фоновую музыку
+      if (backgroundAudio) {
+        if (!backgroundAudio.paused) {
+          backgroundAudio.volume = 0.02; // Сильно приглушаем, чтобы музыка секции была слышна
+        }
+      }
+      
+      const audioIdMap = {
+        royal: 'royal-bg-audio',
+        mobile: 'mobile-bg-audio',
+        mystics: 'mystics-bg-audio',
+        alchemy: 'alchemy-bg-audio',
+        recruiter: 'recruiter-bg-audio',
+        support: 'support-bg-audio',
+        oracle: 'oracle-bg-audio',
+        infra: 'infra-bg-audio',
+        detective: 'detective-bg-audio',
+        exorcist: 'exorcist-bg-audio',
+        specter: 'specter-bg-audio',
+        fixiki: 'fixiki-bg-audio',
+        starwars: 'starwars-bg-audio',
+        art: 'art-bg-audio'
+      };
+      
+      const audioId = audioIdMap[theme];
+      if (!audioId) {
+        console.warn(`No audio found for theme: ${theme}`);
+        return;
+      }
+      
+      const audio = document.getElementById(audioId);
+      if (audio) {
+        audio.loop = true;
+        audio.volume = 0.35;
+        audio.currentTime = 0;
+        
+        audio.play()
+          .then(() => {
+            currentTeamAudio = audio;
+            if (sectionElement) {
+              activeSection = sectionElement;
+            }
+            console.log(`🎵 Playing theme music for ${theme}`);
+          })
+          .catch(err => {
+            console.warn(`Failed to play audio for ${theme}:`, err);
+          });
+      }
+    }
+    
+    // Делаем функции доступными глобально для использования в других местах
+    window.stopTeamAudio = stopTeamAudio;
+    window.playTeamAudio = playTeamAudio;
+    window.hasEnlargedCardsFromSection = hasEnlargedCardsFromSection;
+    
     teamSections.forEach(section => {
       const theme = section.getAttribute('data-theme');
       
-      section.addEventListener('mouseenter', function() {
-        // Stop previous team audio if any
-        if (currentTeamAudio) {
-          currentTeamAudio.pause();
-          currentTeamAudio.currentTime = 0;
-        }
+      section.addEventListener('click', function(e) {
+        // Предотвращаем всплытие клика
+        e.stopPropagation();
         
-        // Pause main background music (or dim it significantly)
-        if (backgroundAudio) {
-          if (!backgroundAudio.paused) {
-            backgroundAudio.volume = 0.05; // Dim instead of pause for smoother transition
-          }
-        }
+        // Музыка не запускается при клике на секцию
+        // Музыка запускается только при открытии box-3d или увеличенной карточки
         
-        // Get appropriate audio element for theme
-        const audioIdMap = {
-          royal: 'royal-bg-audio',
-          mobile: 'mobile-bg-audio',
-          mystics: 'mystics-bg-audio',
-          alchemy: 'alchemy-bg-audio',
-          recruiter: 'recruiter-bg-audio',
-          support: 'support-bg-audio',
-          oracle: 'oracle-bg-audio',
-          infra: 'infra-bg-audio',
-          detective: 'detective-bg-audio',
-          exorcist: 'exorcist-bg-audio',
-          specter: 'specter-bg-audio',
-          fixiki: 'fixiki-bg-audio',
-          starwars: 'starwars-bg-audio',
-          art: 'art-bg-audio'
-        };
-        
-        const audioId = audioIdMap[theme];
-        if (!audioId) {
-          console.warn(`No audio found for theme: ${theme}`);
-          return;
-        }
-        
-        const audio = document.getElementById(audioId);
-        if (audio) {
-          // Ensure audio is set to loop
-          audio.loop = true;
-          audio.volume = 0.35;
-          audio.currentTime = 0;
-          
-          // Play audio with error handling
-          audio.play()
-            .then(() => {
-              currentTeamAudio = audio;
-              console.log(`🎵 Playing theme music for ${theme}`);
-            })
-            .catch(err => {
-              console.warn(`Failed to play audio for ${theme}:`, err);
-              // Try to start on user interaction
-              const tryPlay = () => {
-                audio.play()
-                  .then(() => {
-                    currentTeamAudio = audio;
-                    console.log(`🎵 Playing theme music for ${theme} (after interaction)`);
-                  })
-                  .catch(() => {/* silent fail */});
-              };
-              document.addEventListener('click', tryPlay, { once: true });
-              document.addEventListener('touchstart', tryPlay, { once: true });
-            });
-        } else {
-          console.warn(`Audio element not found: ${audioId}`);
-        }
-        
-        // Visual effect
+        // Visual effect только
         this.style.transform = 'scale(1.02)';
         this.style.boxShadow = '0 0 50px currentColor';
       });
       
-      section.addEventListener('mouseleave', function() {
-        // Stop team theme music
-        if (currentTeamAudio) {
-          currentTeamAudio.pause();
-          currentTeamAudio.currentTime = 0;
-          currentTeamAudio = null;
-          console.log('🎵 Stopped theme music');
+      // Сохраняем hover эффекты для визуального отклика
+      section.addEventListener('mouseenter', function() {
+        // Показываем эффект только если секция не активна или вообще не активна
+        if (activeSection !== this) {
+          this.style.transform = 'scale(1.02)';
+          this.style.boxShadow = '0 0 50px currentColor';
         }
-        
-        // Resume and restore main background music
-        if (backgroundAudio) {
-          // Restore volume first
-          backgroundAudio.volume = 0.4;
-          
-          // If music was started but is paused, resume it
-          if (musicStarted && backgroundAudio.paused) {
-            backgroundAudio.play()
-              .then(() => {
-                console.log('🎵 Background music resumed after leaving section');
-              })
-              .catch(err => {
-                console.warn('Failed to resume background music:', err);
-              });
-          }
-        }
-        
-        // Remove visual effect
-        this.style.transform = 'scale(1)';
-        this.style.boxShadow = 'none';
       });
+      
+      section.addEventListener('mouseleave', function() {
+        // Убираем эффект только если секция не активна
+        if (activeSection !== this) {
+          this.style.transform = 'scale(1)';
+          this.style.boxShadow = 'none';
+        }
+      });
+    });
+    
+    // Клик вне секции - останавливаем музыку (но не если бокс открыт или есть открытые карточки)
+    document.addEventListener('click', function(e) {
+      // Проверяем что клик был не на секцию и не внутри секции
+      const clickedSection = e.target.closest('.team-section');
+      // Также не останавливаем если клик был на увеличенную карточку
+      const clickedCard = e.target.closest('.flying-card.enlarged');
+      // Проверяем, есть ли открытые боксы
+      const openBoxes = document.querySelectorAll('.mystery-box.opened');
+      const hasOpenBox = openBoxes.length > 0;
+      
+      if (!clickedSection && !clickedCard && activeSection && !hasOpenBox) {
+        // Проверяем, есть ли открытые карточки из активной секции
+        const sectionId = activeSection.id;
+        const hasOpenCards = hasEnlargedCardsFromSection(sectionId);
+        
+        // Останавливаем музыку только если нет открытых боксов и нет открытых карточек
+        if (!hasOpenCards) {
+          stopTeamAudio();
+          activeSection = null;
+        }
+      }
     });
   }
 
@@ -303,17 +364,28 @@ document.addEventListener('DOMContentLoaded', () => {
     mysteryBoxes.forEach(box => {
       box.addEventListener('click', function() {
         const isOpen = this.classList.contains('opened');
+        const isOpening = this.dataset.opening === 'true';
+        
+        // Блокируем все действия (открытие и закрытие), пока создаются карточки
+        if (isOpening) {
+          return;
+        }
         
         if (isOpen) {
           // Close this box
           closeBox(this);
         } else {
-          // Close any other open box first
+          // Close any other open box first (если есть открытый бокс)
           if (currentOpenBox && currentOpenBox !== this) {
             closeBox(currentOpenBox);
+            // Ждём немного, чтобы предыдущий бокс успел закрыться перед открытием нового
+            setTimeout(() => {
+              openBox(this);
+            }, 300);
+          } else {
+            // Open this box immediately if no other box is open
+            openBox(this);
           }
-          // Open this box
-          openBox(this);
         }
       });
     });
@@ -321,6 +393,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Open Box and Fly Cards Out
   function openBox(boxElement) {
+    // Проверяем, не открыт ли бокс уже или не открывается ли
+    if (boxElement.classList.contains('opened') || boxElement.dataset.opening === 'true') {
+      return; // Уже открыт или открывается
+    }
+    
     const membersData = boxElement.getAttribute('data-members');
     
     if (!membersData) return;
@@ -329,6 +406,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const members = JSON.parse(membersData);
       const theme = boxElement.getAttribute('data-theme');
       const teamId = boxElement.closest('.team-section')?.id || 'unknown';
+      
+      // Помечаем бокс как открывающийся (блокируем повторные клики)
+      boxElement.dataset.opening = 'true';
       
       // Soft open sound (no beeps)
       playSoftWhoosh();
@@ -350,14 +430,30 @@ document.addEventListener('DOMContentLoaded', () => {
         flyingCards.set(teamId, []);
       }
       
+      // Вычисляем время создания всех карточек
+      const cardsCreationTime = members.length * 150; // время на создание всех карточек
+      
       // Fly cards out
       members.forEach((member, index) => {
         setTimeout(() => {
           createFlyingCard(member, boxCenterX, boxCenterY, theme, teamId);
         }, index * 150);
       });
+      
+      // Сбрасываем флаг opening только после того, как все карточки будут созданы
+      // Добавляем небольшую задержку для уверенности, что все карточки созданы
+      setTimeout(() => {
+        delete boxElement.dataset.opening;
+      }, cardsCreationTime + 200);
+      
       // Start presentation sequence after all cards created
       setTimeout(() => presentTeamCards(teamId), members.length * 180 + 400);
+      
+      // Запускаем музыку секции при открытии box-3d
+      if (theme && window.playTeamAudio) {
+        const sectionElement = teamId !== 'unknown' ? document.getElementById(teamId) : null;
+        window.playTeamAudio(theme, sectionElement);
+      }
       
     } catch (error) {
       console.error('Error parsing members data:', error);
@@ -398,10 +494,52 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear this team's cards from the map
     flyingCards.delete(teamId);
     
-    // Close box
+    // Сразу сбрасываем состояние бокса, чтобы можно было открыть другой
+    boxElement.classList.remove('opened');
+    delete boxElement.dataset.opening; // Сбрасываем флаг opening
+    if (currentOpenBox === boxElement) {
+      currentOpenBox = null;
+    }
+    
+    // Останавливаем музыку секции при закрытии box-3d и возвращаем фоновую
+    const boxTheme = boxElement.getAttribute('data-theme');
+    const boxTeamId = teamId !== 'unknown' ? teamId : null;
+    
+    // Проверяем, остались ли еще открытые боксы после закрытия этого
+    // Делаем небольшую задержку, чтобы класс 'opened' успел удалиться
+    setTimeout(() => {
+      const openBoxes = document.querySelectorAll('.mystery-box.opened');
+      const hasOpenBoxes = openBoxes.length > 0;
+      
+      // Также проверяем, есть ли открытые увеличенные карточки из этой секции
+      const hasEnlargedCardsFromSection = boxTeamId && window.hasEnlargedCardsFromSection 
+        ? window.hasEnlargedCardsFromSection(boxTeamId) 
+        : false;
+      
+      if (!hasOpenBoxes && !hasEnlargedCardsFromSection) {
+        // Если все боксы закрыты И нет открытых карточек из этой секции - останавливаем музыку
+        if (boxTheme && window.stopTeamAudio) {
+          const activeSectionId = activeSection ? activeSection.id : null;
+          // Если музыка играет и активная секция соответствует боксу или секция не активна - останавливаем
+          if (!activeSection || activeSectionId === boxTeamId) {
+            window.stopTeamAudio();
+            if (activeSection && activeSectionId === boxTeamId) {
+              activeSection = null;
+            }
+          }
+        }
+      } else {
+        // Если еще есть открытые боксы или открытые карточки - музыка секции продолжает играть
+        // (или может переключиться на другую секцию, если открыт другой бокс)
+      }
+    }, 50);
+    
+    // Также сбрасываем через таймаут для финального состояния (на случай если нужна визуальная анимация)
     setTimeout(() => {
       boxElement.classList.remove('opened');
-      currentOpenBox = null;
+      if (currentOpenBox === boxElement) {
+        currentOpenBox = null;
+      }
     }, teamCards.length * 100 + 500);
   }
 
@@ -487,6 +625,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Store member info for highlight
     card.memberData = member;
+    // Store team info for music playback
+    card.dataset.teamId = teamId;
+    card.dataset.teamTheme = theme;
     
     // Trigger explosion animation with member reveal effect
     setTimeout(() => {
@@ -649,9 +790,81 @@ document.addEventListener('DOMContentLoaded', () => {
           // Resume floating
           const d = Number(otherCard.dataset.floatDuration || '5');
           otherCard.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
-          // Скрываем description
+          // Скрываем description, role и power - показываем только avatar и name
           const descEl = otherCard.querySelector('.member-description');
+          const roleEl = otherCard.querySelector('.member-role');
+          const powerEl = otherCard.querySelector('.member-power');
           if (descEl) descEl.style.display = 'none';
+          if (roleEl) roleEl.style.display = 'none';
+          if (powerEl) powerEl.style.display = 'none';
+          
+          // Восстанавливаем фон и показываем аватарку
+          otherCard.style.background = '';
+          otherCard.style.backgroundImage = '';
+          otherCard.style.backgroundSize = '';
+          otherCard.style.backgroundPosition = '';
+          otherCard.style.backgroundRepeat = '';
+          otherCard.style.backgroundBlendMode = '';
+          otherCard.style.color = '';
+          const imgEl = otherCard.querySelector('img');
+          if (imgEl) {
+            const avatarUrl = otherCard.memberData?.avatar || otherCard.memberData?.image || '';
+            if (avatarUrl) imgEl.src = avatarUrl;
+            imgEl.style.display = 'block';
+          }
+          
+          // Восстанавливаем имя
+          const titleEl = otherCard.querySelector('.member-title');
+          if (titleEl && otherCard.dataset.originalTitle !== undefined) {
+            titleEl.textContent = otherCard.dataset.originalTitle;
+          }
+        }
+      });
+    }
+    
+    function minimizeOtherCards(excludeCard) {
+      // Уменьшаем все другие карточки, но не увеличенные
+      const allCards = document.querySelectorAll('.flying-card');
+      allCards.forEach(otherCard => {
+        // Исключаем увеличенную карточку и ту карточку, которая будет увеличенной
+        if (otherCard !== excludeCard && otherCard.getAttribute('data-enlarged') !== 'true') {
+          // Сохраняем оригинальный размер для восстановления
+          if (!otherCard.dataset.originalScale) {
+            otherCard.dataset.originalScale = otherCard.style.transform || '';
+          }
+          otherCard.style.transition = 'all 0.3s ease';
+          otherCard.style.transform = 'scale(0.7)';
+          otherCard.style.opacity = '0.5';
+          otherCard.style.zIndex = '200';
+        }
+      });
+    }
+    
+    function restoreOtherCards() {
+      // Восстанавливаем все карточки к нормальному размеру
+      const allCards = document.querySelectorAll('.flying-card');
+      allCards.forEach(otherCard => {
+        if (otherCard.getAttribute('data-enlarged') !== 'true') {
+          otherCard.style.transition = 'all 0.3s ease';
+          const originalScale = otherCard.dataset.originalScale || '';
+          otherCard.style.transform = originalScale;
+          otherCard.style.opacity = '1';
+          otherCard.style.zIndex = '201';
+          delete otherCard.dataset.originalScale;
+          
+          // Убеждаемся, что на закрытых карточках показываются только avatar и name
+          const roleEl = otherCard.querySelector('.member-role');
+          const powerEl = otherCard.querySelector('.member-power');
+          const descEl = otherCard.querySelector('.member-description');
+          if (roleEl) roleEl.style.display = 'none';
+          if (powerEl) powerEl.style.display = 'none';
+          if (descEl) descEl.style.display = 'none';
+          
+          // Показываем аватарку
+          const imgEl = otherCard.querySelector('img');
+          if (imgEl) {
+            imgEl.style.display = 'block';
+          }
         }
       });
     }
@@ -661,6 +874,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!enlarged) {
         // Закрываем все другие карточки
         closeAllOtherCards();
+        
+        // Уменьшаем все остальные карточки
+        minimizeOtherCards(card);
         
         // Сохраняем текущую позицию из style (реальные значения)
         const currentLeft = parseFloat(card.style.left) || 0;
@@ -681,15 +897,16 @@ document.addEventListener('DOMContentLoaded', () => {
         highlightElements.forEach(el => el.remove());
         
         card.style.transition = 'all 0.4s ease';
-        card.style.width = '380px';
+        card.style.width = '320px';
         card.style.height = 'auto';
-        card.style.minHeight = '520px';
+        card.style.minHeight = '410px';
         card.style.zIndex = '210';
-        card.style.boxShadow = '0 0 80px rgba(0,0,0,0.6), 0 0 120px currentColor';
+        card.style.boxShadow = '0 0 60px rgba(0,0,0,0.6), 0 0 90px currentColor';
         card.style.filter = 'none';
-        card.style.transform = 'scale(1.6)';
-        // Подвинуть текст ниже при раскрытой карточке (как было)
-        card.style.paddingTop = '6rem';
+        card.style.opacity = '1'; // Убеждаемся что увеличенная карточка полностью видна
+        card.style.transform = 'scale(1.3)';
+        // Подвинуть текст ниже при раскрытой карточке
+        card.style.paddingTop = '4rem';
         // Поставить картинку на фон и скрыть аватарку
         const imgEl = card.querySelector('img');
         if (imgEl) {
@@ -749,6 +966,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (roleEl) roleEl.style.display = 'block';
         if (powerEl) powerEl.style.display = 'block';
         if (descEl && descEl.textContent.trim()) descEl.style.display = 'block';
+        
+        // Запускаем музыку секции при открытии увеличенной карточки (только если бокс не открыт)
+        const cardTheme = card.dataset.teamTheme;
+        const cardTeamId = card.dataset.teamId;
+        if (cardTheme && window.playTeamAudio && cardTeamId) {
+          // Проверяем, открыт ли бокс этой секции
+          const sectionElement = document.getElementById(cardTeamId);
+          const sectionBox = sectionElement ? sectionElement.querySelector('.mystery-box') : null;
+          const isBoxOpen = sectionBox && sectionBox.classList.contains('opened');
+          
+          // Если бокс не открыт, запускаем музыку через карточку
+          if (!isBoxOpen) {
+            window.playTeamAudio(cardTheme, sectionElement);
+          }
+          // Если бокс открыт, музыка уже должна играть - ничего не делаем
+        }
       } else {
         // Восстанавливаем исходную позицию
         const originalLeft = card.dataset.originalLeft;
@@ -767,12 +1000,17 @@ document.addEventListener('DOMContentLoaded', () => {
         card.style.zIndex = '201';
         card.style.boxShadow = '';
         card.style.filter = '';
-        // Вернуть изначальный вид карточки
+        // Вернуть изначальный вид карточки - скрываем фон и показываем аватарку
+        card.style.background = '';
         card.style.backgroundImage = '';
         card.style.backgroundSize = '';
         card.style.backgroundPosition = '';
         card.style.backgroundRepeat = '';
+        card.style.backgroundBlendMode = '';
+        card.style.color = '';
         card.style.paddingTop = '';
+        
+        // Показываем аватарку
         const imgEl = card.querySelector('img');
         if (imgEl) {
           // Restore avatar (prefer explicit avatar if provided)
@@ -780,22 +1018,60 @@ document.addEventListener('DOMContentLoaded', () => {
           if (avatarUrl) imgEl.src = avatarUrl;
           imgEl.style.display = 'block';
         }
-        // Вернуть исходный заголовок (имя)
+        
+        // Вернуть исходный заголовок (имя) - показываем имя вместо nickname
         const titleEl = card.querySelector('.member-title');
         if (titleEl && card.dataset.originalTitle !== undefined) {
           titleEl.textContent = card.dataset.originalTitle;
         }
 
+        // Восстанавливаем остальные карточки к нормальному размеру
+        restoreOtherCards();
+        
         // Resume floating
         const d = Number(card.dataset.floatDuration || '5');
         card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
-        // Скрываем description
+        // Скрываем description, role и power - показываем только avatar и name
         const descEl = card.querySelector('.member-description');
         if (descEl) descEl.style.display = 'none';
         const roleEl = card.querySelector('.member-role');
         const powerEl = card.querySelector('.member-power');
         if (roleEl) roleEl.style.display = 'none';
         if (powerEl) powerEl.style.display = 'none';
+        
+        // Останавливаем музыку секции и возвращаем фоновую при закрытии увеличенной карточки
+        // НО только если бокс не открыт И нет других открытых карточек (музыка должна играть пока открыт бокс или карточки)
+        const cardTeamId = card.dataset.teamId;
+        const cardTheme = card.dataset.teamTheme;
+        if (cardTeamId && cardTheme && window.stopTeamAudio) {
+          // Проверяем, открыт ли бокс этой секции
+          const sectionElement = document.getElementById(cardTeamId);
+          const sectionBox = sectionElement ? sectionElement.querySelector('.mystery-box') : null;
+          const isBoxOpen = sectionBox && sectionBox.classList.contains('opened');
+          
+          // Также проверяем, есть ли другие открытые увеличенные карточки из этой секции
+          // Сначала временно закрываем текущую карточку для проверки
+          const tempEnlarged = card.getAttribute('data-enlarged');
+          card.setAttribute('data-enlarged', 'false');
+          const hasOtherEnlargedCards = window.hasEnlargedCardsFromSection 
+            ? window.hasEnlargedCardsFromSection(cardTeamId)
+            : false;
+          // Восстанавливаем состояние карточки для проверки
+          card.setAttribute('data-enlarged', tempEnlarged);
+          
+          // Останавливаем музыку только если бокс закрыт И нет других открытых карточек из этой секции
+          if (!isBoxOpen && !hasOtherEnlargedCards) {
+            const activeSectionId = activeSection ? activeSection.id : null;
+            // Если секция не активна или это та же секция - останавливаем музыку
+            if (!activeSection || activeSectionId === cardTeamId) {
+              window.stopTeamAudio();
+              if (activeSection && activeSectionId === cardTeamId) {
+                activeSection = null;
+              }
+            }
+          }
+          // Если бокс открыт или есть другие открытые карточки, музыка продолжает играть - ничего не делаем
+        }
       }
     }
     
