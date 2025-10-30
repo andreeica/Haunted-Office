@@ -24,7 +24,7 @@
 
 ### 💥 Уникальные анимации открытия коробок
 
-#### ⚫ Backend (Sith Lords)
+#### Backend (Sith Lords)
 - Вращение 720° с исчезновением
 - 30 темных частиц ☠️
 - Темно-красное свечение
@@ -133,7 +133,7 @@ audio/
 
 ### 🎨 Тематические команды
 
-#### ⚫ Backend - The Order of the Code (Star Wars)
+#### Backend - The Order of the Code (Star Wars)
 ```
 Darth Commitus - Lead Sith Lord
 "I command the builds and the merges obey me!"
@@ -265,7 +265,7 @@ Server Warden - Server Keeper
 
 **© 2025 Haunted Office 🎃👻**
 
-**May the code be with you... always 🚀⚫**
+**May the code be with you... always 🚀**
 
 **Powered by:** Dark Side of Backend & Bug Fixiki Squad
 
