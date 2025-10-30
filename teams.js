@@ -463,10 +463,10 @@ document.addEventListener('DOMContentLoaded', () => {
     card.style.setProperty('--float-y', floatY + 'px');
     
     card.innerHTML = `
-      <img src="${member.image}" alt="${member.name}">
-      <h3>${member.name}</h3>
-      <p class="member-role">${member.role}</p>
-      <p class="member-power">"${member.power}"</p>
+      <img src="${member.avatar || member.image}" alt="${member.name}">
+      <h3 class="member-title">${member.name}</h3>
+      <p class="member-role" style="display: none;">${member.role}</p>
+      <p class="member-power" style="display: none;">"${member.power}"</p>
       <p class="member-description" style="display: none;">${member.description || ''}</p>
     `;
     
@@ -680,13 +680,32 @@ document.addEventListener('DOMContentLoaded', () => {
         highlightElements.forEach(el => el.remove());
         
         card.style.transition = 'all 0.4s ease';
-        card.style.width = '350px';
+        card.style.width = '380px';
         card.style.height = 'auto';
         card.style.minHeight = '520px';
         card.style.zIndex = '210';
-        card.style.boxShadow = '0 0 150px currentColor, 0 0 200px currentColor';
-        card.style.filter = 'brightness(1.3)';
+        card.style.boxShadow = '0 0 80px rgba(0,0,0,0.6), 0 0 120px currentColor';
+        card.style.filter = 'none';
         card.style.transform = 'scale(1.6)';
+        // Подвинуть текст ниже при раскрытой карточке (как было)
+        card.style.paddingTop = '6rem';
+        // Поставить картинку на фон и скрыть аватарку
+        const imgEl = card.querySelector('img');
+        if (imgEl) {
+          imgEl.style.display = 'none';
+        }
+        const bgUrl = card.memberData?.image || card.memberData?.avatar || '';
+        if (bgUrl) {
+          // Сбрасываем фон из базовых стилей и делаем более прозрачный оверлей
+          card.style.background = 'none';
+          card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.55)), url(${bgUrl})`;
+          // Градиент и изображение покрывают всю карточку (может быть небольшая обрезка)
+          card.style.backgroundSize = 'cover, cover';
+          card.style.backgroundPosition = 'center, center';
+          card.style.backgroundRepeat = 'no-repeat, no-repeat';
+          card.style.backgroundBlendMode = 'multiply';
+          card.style.color = '#ffffff';
+        }
         
         // Оставляем карточку на месте
         card.style.left = currentLeft + 'px';
@@ -714,6 +733,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Stop floating entirely чтобы не тянуло карту
         card.dataset.prevAnimation = card.style.animation || '';
         card.style.animation = 'none';
+        // Заменяем имя на nickname (если есть)
+        const titleEl = card.querySelector('.member-title');
+        card.dataset.originalTitle = titleEl ? titleEl.textContent || '' : '';
+        const nickname = card.memberData?.nickname;
+        if (titleEl && nickname) {
+          titleEl.textContent = nickname;
+        }
+
         // Показываем весь текст и description
         const roleEl = card.querySelector('.member-role');
         const powerEl = card.querySelector('.member-power');
@@ -739,12 +766,35 @@ document.addEventListener('DOMContentLoaded', () => {
         card.style.zIndex = '201';
         card.style.boxShadow = '';
         card.style.filter = '';
+        // Вернуть изначальный вид карточки
+        card.style.backgroundImage = '';
+        card.style.backgroundSize = '';
+        card.style.backgroundPosition = '';
+        card.style.backgroundRepeat = '';
+        card.style.paddingTop = '';
+        const imgEl = card.querySelector('img');
+        if (imgEl) {
+          // Restore avatar (prefer explicit avatar if provided)
+          const avatarUrl = card.memberData?.avatar || card.memberData?.image || '';
+          if (avatarUrl) imgEl.src = avatarUrl;
+          imgEl.style.display = 'block';
+        }
+        // Вернуть исходный заголовок (имя)
+        const titleEl = card.querySelector('.member-title');
+        if (titleEl && card.dataset.originalTitle !== undefined) {
+          titleEl.textContent = card.dataset.originalTitle;
+        }
+
         // Resume floating
         const d = Number(card.dataset.floatDuration || '5');
         card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
         // Скрываем description
         const descEl = card.querySelector('.member-description');
         if (descEl) descEl.style.display = 'none';
+        const roleEl = card.querySelector('.member-role');
+        const powerEl = card.querySelector('.member-power');
+        if (roleEl) roleEl.style.display = 'none';
+        if (powerEl) powerEl.style.display = 'none';
       }
     }
     
