@@ -783,6 +783,19 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Store member info for highlight
     card.memberData = member;
+    // Derive member slug for per-card animations (prefer nickname)
+    (function(){
+      const base = (member.nickname || member.name || '').toString().toLowerCase();
+      const slug = base
+        .replace(/[^a-z0-9\s-]/g,'')
+        .replace(/\s+/g,'-')
+        .replace(/-+/g,'-')
+        .trim();
+      if (slug) {
+        card.dataset.memberSlug = slug;
+        card.classList.add('member-' + slug);
+      }
+    })();
     // Store team info for music playback
     card.dataset.teamId = teamId;
     card.dataset.teamTheme = theme;
@@ -1060,6 +1073,42 @@ document.addEventListener('DOMContentLoaded', () => {
         card.setAttribute('data-enlarged', 'true');
         card.dataset.userEnlarged = 'true';
         card.classList.add('enlarged');
+        card.classList.add('anim-active');
+        // add thematic animation class anim-<theme> and per-member class
+        (function(){
+          const themeClass = 'anim-' + (card.dataset.teamTheme || '').trim();
+          if (themeClass && !card.classList.contains(themeClass)) {
+            card.classList.add(themeClass);
+          }
+          if (!card.className.includes('anim-')) {
+            card.classList.add('anim-default');
+          }
+          // ensure member-<slug> present from dataset.memberSlug (added on create)
+          const slug = card.dataset.memberSlug;
+          if (slug && !card.classList.contains('member-' + slug)) {
+            card.classList.add('member-' + slug);
+          }
+          // Per-member epic overlays (visible, no assets) — add dynamic child once
+          if ((card.dataset.teamTheme || '') === 'starwars') {
+            if (slug && slug.includes('darth-commitus') && !card.querySelector('.saber-blade')) {
+              const blade = document.createElement('div');
+              blade.className = 'saber-blade';
+              card.appendChild(blade);
+            }
+            if (slug && slug.includes('lady-querya') && !card.querySelector('.magic-orb')) {
+              const orb = document.createElement('div');
+              orb.className = 'magic-orb';
+              card.appendChild(orb);
+            }
+          }
+        })();
+        // add thematic animation class anim-<theme>
+        (function(){
+          const themeClass = 'anim-' + (card.dataset.teamTheme || '').trim();
+          if (themeClass && !card.classList.contains(themeClass)) {
+            card.classList.add(themeClass);
+          }
+        })();
         
         // Отменяем любые активные highlight эффекты
         if (card._highlightTimeout1) clearTimeout(card._highlightTimeout1);
@@ -1078,10 +1127,12 @@ document.addEventListener('DOMContentLoaded', () => {
         card.style.transform = 'scale(1.25)';
         // Подвинуть текст ниже при раскрытой карточке
         card.style.paddingTop = '2.8rem';
-        // В большой карточке скрываем круглый аватар, показываем только фон с лицом
+        // В большой карточке используем аватар как анимированный "спотлайт" (не скрываем)
         const imgEl = card.querySelector('img');
         if (imgEl) {
-          imgEl.style.display = 'none'; // Скрываем круглый аватар в большой карточке
+          card.dataset.prevImgDisplay = imgEl.style.display || '';
+          imgEl.style.display = 'block';
+          imgEl.classList.add('spotlight');
         }
         const bgUrl = card.memberData?.image || card.memberData?.avatar || '';
         if (bgUrl) {
@@ -1179,6 +1230,21 @@ document.addEventListener('DOMContentLoaded', () => {
         card.setAttribute('data-enlarged', 'false');
         delete card.dataset.userEnlarged;
         card.classList.remove('enlarged');
+        card.classList.remove('anim-active');
+        (function(){
+          const removeThemeClass = 'anim-' + (card.dataset.teamTheme || '').trim();
+          if (removeThemeClass) card.classList.remove(removeThemeClass);
+          card.classList.remove('anim-default');
+        })();
+        // Remove dynamic overlays if exist
+        const blade = card.querySelector('.saber-blade');
+        if (blade) blade.remove();
+        const orb = card.querySelector('.magic-orb');
+        if (orb) orb.remove();
+        (function(){
+          const removeThemeClass = 'anim-' + (card.dataset.teamTheme || '').trim();
+          if (removeThemeClass) card.classList.remove(removeThemeClass);
+        })();
         card.style.transform = '';
         card.style.width = '';
         card.style.height = '';
@@ -1196,12 +1262,13 @@ document.addEventListener('DOMContentLoaded', () => {
         card.style.color = '';
         card.style.paddingTop = '';
         
-        // Показываем аватарку
+        // Показываем аватарку и убираем спец-класс
         const imgEl = card.querySelector('img');
         if (imgEl) {
           // Restore avatar (prefer explicit avatar if provided)
           const avatarUrl = card.memberData?.avatar || card.memberData?.image || '';
           if (avatarUrl) imgEl.src = avatarUrl;
+          imgEl.classList.remove('spotlight');
           imgEl.style.display = 'block';
         }
         
