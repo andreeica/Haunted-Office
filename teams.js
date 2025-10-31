@@ -209,6 +209,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Team section click effects - play theme music - only if sections exist
   let activeSection = null; // Отслеживаем активную секцию (глобально для доступа из других функций)
   if (teamSections.length > 0) {
+    // Add pumpkin buttons to each section (top-right)
+    teamSections.forEach(section => {
+      if (!section.querySelector('.squad-pumpkin')) {
+        const btn = document.createElement('div');
+        btn.className = 'squad-pumpkin';
+        btn.title = 'Arrange cards (gallery)';
+        btn.textContent = '🎃';
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = section.id;
+          toggleGalleryLayout(id);
+        });
+        if (getComputedStyle(section).position === 'static') {
+          section.style.position = 'relative';
+        }
+        section.appendChild(btn);
+      }
+    });
     
     // Функция для проверки наличия открытых увеличенных карточек из секции
     function hasEnlargedCardsFromSection(sectionId) {
@@ -233,14 +251,14 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
       }
-      if (currentTeamAudio) {
+        if (currentTeamAudio) {
         // Удаляем обработчик зацикливания перед остановкой
         if (currentTeamAudio._loopHandler) {
           currentTeamAudio.removeEventListener('ended', currentTeamAudio._loopHandler);
           delete currentTeamAudio._loopHandler;
         }
-        currentTeamAudio.pause();
-        currentTeamAudio.currentTime = 0;
+          currentTeamAudio.pause();
+          currentTeamAudio.currentTime = 0;
         currentTeamAudio = null;
       }
       
@@ -273,42 +291,42 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       // Останавливаем или сильно приглушаем фоновую музыку
-      if (backgroundAudio) {
-        if (!backgroundAudio.paused) {
+        if (backgroundAudio) {
+          if (!backgroundAudio.paused) {
           backgroundAudio.volume = 0.02; // Сильно приглушаем, чтобы музыка секции была слышна
+          }
         }
-      }
-      
-      const audioIdMap = {
-        royal: 'royal-bg-audio',
-        mobile: 'mobile-bg-audio',
-        mystics: 'mystics-bg-audio',
-        alchemy: 'alchemy-bg-audio',
-        recruiter: 'recruiter-bg-audio',
-        support: 'support-bg-audio',
-        oracle: 'oracle-bg-audio',
-        infra: 'infra-bg-audio',
-        detective: 'detective-bg-audio',
-        exorcist: 'exorcist-bg-audio',
-        specter: 'specter-bg-audio',
-        fixiki: 'fixiki-bg-audio',
-        starwars: 'starwars-bg-audio',
-        art: 'art-bg-audio'
-      };
-      
-      const audioId = audioIdMap[theme];
-      if (!audioId) {
-        console.warn(`No audio found for theme: ${theme}`);
-        return;
-      }
-      
-      const audio = document.getElementById(audioId);
-      if (audio) {
-        // Устанавливаем зацикливание
-        audio.loop = true;
-        audio.volume = 0.35;
-        audio.currentTime = 0;
         
+        const audioIdMap = {
+          royal: 'royal-bg-audio',
+          mobile: 'mobile-bg-audio',
+          mystics: 'mystics-bg-audio',
+          alchemy: 'alchemy-bg-audio',
+          recruiter: 'recruiter-bg-audio',
+          support: 'support-bg-audio',
+          oracle: 'oracle-bg-audio',
+          infra: 'infra-bg-audio',
+          detective: 'detective-bg-audio',
+          exorcist: 'exorcist-bg-audio',
+          specter: 'specter-bg-audio',
+          fixiki: 'fixiki-bg-audio',
+          starwars: 'starwars-bg-audio',
+          art: 'art-bg-audio'
+        };
+        
+        const audioId = audioIdMap[theme];
+        if (!audioId) {
+          console.warn(`No audio found for theme: ${theme}`);
+          return;
+        }
+        
+        const audio = document.getElementById(audioId);
+        if (audio) {
+        // Устанавливаем зацикливание
+          audio.loop = true;
+          audio.volume = 0.35;
+          audio.currentTime = 0;
+          
         // Дополнительная защита: если loop не сработает, перезапускаем вручную
         const ensureLoop = () => {
           // Если это текущая музыка команды, продолжаем зацикливание
@@ -324,16 +342,16 @@ document.addEventListener('DOMContentLoaded', () => {
         audio._loopHandler = ensureLoop;
         audio.addEventListener('ended', ensureLoop);
         
-        audio.play()
-          .then(() => {
-            currentTeamAudio = audio;
+          audio.play()
+            .then(() => {
+              currentTeamAudio = audio;
             if (sectionElement) {
               activeSection = sectionElement;
             }
             console.log(`🎵 Playing theme music for ${theme} (looped)`);
-          })
-          .catch(err => {
-            console.warn(`Failed to play audio for ${theme}:`, err);
+            })
+            .catch(err => {
+              console.warn(`Failed to play audio for ${theme}:`, err);
           });
       }
     }
@@ -400,6 +418,113 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Toggle gallery layout for a team (zigzag medium positioning)
+  function toggleGalleryLayout(teamId) {
+    const section = document.getElementById(teamId);
+    if (!section) return;
+    const cards = flyingCards.get(teamId) || [];
+    if (!cards.length) return; // Only when cards are out
+
+    const active = section.getAttribute('data-gallery') === 'on';
+    if (!active) {
+      // Activate gallery: make all cards medium and align into ONE HORIZONTAL ROW
+      section.setAttribute('data-gallery', 'on');
+      // Collect current positions
+      const currentPositions = cards.map(card => {
+        const rect = card.getBoundingClientRect();
+        return { card, left: parseFloat(card.style.left || rect.left), top: parseFloat(card.style.top || rect.top) };
+      });
+      // Baseline: align to UPPER row (min top among current positions), slightly lift
+      const baselineTop = Math.min(...currentPositions.map(p => p.top)) - 10;
+      // Center horizontally inside the parent squad section (no jump to page center)
+      const sectionRect = section.getBoundingClientRect();
+      const effWidth = 260; // medium width we set below
+      const spacing = 32; // небольшое расстояние между карточками в ряд
+      const totalWidth = currentPositions.length * effWidth + (currentPositions.length - 1) * spacing;
+      // Center within section, keep small side padding
+      let x = Math.max(sectionRect.left + 20, sectionRect.left + (sectionRect.width - totalWidth) / 2);
+
+      // Process each card (order by current left to keep visual order)
+      currentPositions.sort((a,b)=>a.left-b.left).forEach(pos => {
+        const card = pos.card;
+        // Save previous state
+        const rect = card.getBoundingClientRect();
+        card.dataset.galleryPrevLeft = card.style.left || rect.left + 'px';
+        card.dataset.galleryPrevTop = card.style.top || rect.top + 'px';
+        card.dataset.galleryPrevAnim = card.style.animation || '';
+        card.dataset.galleryPrevTransform = card.style.transform || '';
+        card.dataset.galleryPrevWidth = card.style.width || '';
+        card.dataset.galleryPrevMinH = card.style.minHeight || '';
+        card.dataset.galleryPrevBG = card.style.background || '';
+        card.dataset.galleryPrevBGImg = card.style.backgroundImage || '';
+        card.dataset.galleryPrevBGSize = card.style.backgroundSize || '';
+        card.dataset.galleryPrevBGPos = card.style.backgroundPosition || '';
+        card.dataset.galleryPrevBGRep = card.style.backgroundRepeat || '';
+        card.dataset.galleryPrevBlend = card.style.backgroundBlendMode || '';
+        card.dataset.galleryPrevColor = card.style.color || '';
+        card.dataset.galleryPrevTxtShadow = card.style.textShadow || '';
+
+        // Switch to medium size in place
+        card.setAttribute('data-enlarged', 'false');
+        card.classList.remove('enlarged');
+        card.classList.add('medium');
+        card.style.animation = 'none';
+        card.style.transition = 'all 0.2s ease';
+        card.style.width = '260px';
+        card.style.minHeight = '380px';
+        card.style.transform = 'scale(1.1)';
+
+        // Hide circle avatar and use background image like in big mode
+        const imgEl = card.querySelector('img');
+        if (imgEl) {
+          card.dataset.galleryPrevImgDisplay = imgEl.style.display || '';
+          imgEl.style.display = 'none';
+        }
+        const bgUrl = card.memberData?.image || card.memberData?.avatar || '';
+        if (bgUrl) {
+          const n = (card.memberData?.name || '').toLowerCase();
+          const isVertical = n.includes('croitor') || n.includes('pavel') || n.includes('daniela') || n.includes('avtenii') || n.includes('tcaciuc') || n.includes('natalia');
+          card.style.background = 'none';
+          card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url(${bgUrl})`;
+          card.style.backgroundSize = (isVertical ? 'contain, contain' : 'cover, cover');
+          card.style.backgroundPosition = (isVertical ? 'center top, center top' : 'center center, center center');
+          card.style.backgroundRepeat = 'no-repeat, no-repeat';
+          card.style.backgroundBlendMode = 'normal';
+          card.style.color = '#fff';
+          card.style.textShadow = '0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.6)';
+        }
+        // Align into one row at baselineTop without moving upward
+        card.style.left = x + 'px';
+        card.style.top = baselineTop + 'px';
+        x += effWidth + spacing;
+      });
+    } else {
+      // Deactivate gallery -> restore positions/sizes
+      section.setAttribute('data-gallery', 'off');
+      cards.forEach(card => {
+        card.classList.remove('medium');
+        if (card.dataset.galleryPrevLeft) card.style.left = card.dataset.galleryPrevLeft;
+        if (card.dataset.galleryPrevTop) card.style.top = card.dataset.galleryPrevTop;
+        card.style.animation = card.dataset.galleryPrevAnim || '';
+        card.style.transform = card.dataset.galleryPrevTransform || '';
+        card.style.width = card.dataset.galleryPrevWidth || '';
+        card.style.minHeight = card.dataset.galleryPrevMinH || '';
+        card.style.background = card.dataset.galleryPrevBG || '';
+        card.style.backgroundImage = card.dataset.galleryPrevBGImg || '';
+        card.style.backgroundSize = card.dataset.galleryPrevBGSize || '';
+        card.style.backgroundPosition = card.dataset.galleryPrevBGPos || '';
+        card.style.backgroundRepeat = card.dataset.galleryPrevBGRep || '';
+        card.style.backgroundBlendMode = card.dataset.galleryPrevBlend || '';
+        card.style.color = card.dataset.galleryPrevColor || '';
+        card.style.textShadow = card.dataset.galleryPrevTxtShadow || '';
+        const imgEl = card.querySelector('img');
+        if (imgEl) {
+          imgEl.style.display = card.dataset.galleryPrevImgDisplay || '';
+        }
+      });
+    }
+  }
+
   // Mystery Box Click - Open/Close - only if boxes exist
   const mysteryBoxes = document.querySelectorAll('.mystery-box');
   
@@ -427,7 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 300);
           } else {
             // Open this box immediately if no other box is open
-            openBox(this);
+          openBox(this);
           }
         }
       });
@@ -436,9 +561,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Open Box and Fly Cards Out
   function openBox(boxElement) {
-    // Проверяем, не открыт ли бокс уже или не открывается ли
-    if (boxElement.classList.contains('opened') || boxElement.dataset.opening === 'true') {
-      return; // Уже открыт или открывается
+    // Если уже открыт — просто выходим, повторное открытие не требуется
+    if (boxElement.classList.contains('opened')) {
+      return;
     }
     
     const membersData = boxElement.getAttribute('data-members');
@@ -449,9 +574,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const members = JSON.parse(membersData);
       const theme = boxElement.getAttribute('data-theme');
       const teamId = boxElement.closest('.team-section')?.id || 'unknown';
-      
-      // Помечаем бокс как открывающийся (блокируем повторные клики)
-      boxElement.dataset.opening = 'true';
       
       // Soft open sound (no beeps)
       playSoftWhoosh();
@@ -473,21 +595,12 @@ document.addEventListener('DOMContentLoaded', () => {
         flyingCards.set(teamId, []);
       }
       
-      // Вычисляем время создания всех карточек
-      const cardsCreationTime = members.length * 150; // время на создание всех карточек
-      
       // Fly cards out
       members.forEach((member, index) => {
         setTimeout(() => {
           createFlyingCard(member, boxCenterX, boxCenterY, theme, teamId);
         }, index * 150);
       });
-      
-      // Сбрасываем флаг opening только после того, как все карточки будут созданы
-      // Добавляем небольшую задержку для уверенности, что все карточки созданы
-      setTimeout(() => {
-        delete boxElement.dataset.opening;
-      }, cardsCreationTime + 200);
       
       // Start presentation sequence after all cards created
       setTimeout(() => presentTeamCards(teamId), members.length * 180 + 400);
@@ -581,7 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       boxElement.classList.remove('opened');
       if (currentOpenBox === boxElement) {
-        currentOpenBox = null;
+      currentOpenBox = null;
       }
     }, teamCards.length * 100 + 500);
   }
@@ -690,6 +803,19 @@ document.addEventListener('DOMContentLoaded', () => {
       card.dataset.floatDuration = String(duration);
       card.style.animation = `cardFloatFree ${duration}s ease-in-out infinite`;
     }, 850);
+
+    // Adjust small avatar crop for vertical photos (Pavel Croitor, Daniela Avtenii, designer)
+    const imgEl = card.querySelector('img');
+    if (imgEl && member && typeof member.name === 'string') {
+      const n = member.name.toLowerCase();
+      const isVertical = n.includes('croitor') || n.includes('pavel') || n.includes('daniela') || n.includes('avtenii') || n.includes('tcaciuc') || n.includes('natalia');
+      imgEl.style.objectFit = 'cover';
+      if (isVertical) {
+        imgEl.style.objectPosition = '50% 20%'; // focus higher to show face
+      } else {
+        imgEl.style.objectPosition = '50% 50%';
+      }
+    }
     
     // Make card draggable
     makeDraggable(card);
@@ -942,16 +1068,16 @@ document.addEventListener('DOMContentLoaded', () => {
         highlightElements.forEach(el => el.remove());
         
         card.style.transition = 'all 0.4s ease';
-        card.style.width = '360px';
+        card.style.width = '320px';
         card.style.height = 'auto';
-        card.style.minHeight = '450px';
+        card.style.minHeight = '410px';
         card.style.zIndex = '210';
         card.style.boxShadow = '0 0 60px rgba(0,0,0,0.6), 0 0 90px currentColor';
         card.style.filter = 'none';
         card.style.opacity = '1';
-        card.style.transform = 'scale(1.5)';
+        card.style.transform = 'scale(1.25)';
         // Подвинуть текст ниже при раскрытой карточке
-        card.style.paddingTop = '3.5rem';
+        card.style.paddingTop = '2.8rem';
         // В большой карточке скрываем круглый аватар, показываем только фон с лицом
         const imgEl = card.querySelector('img');
         if (imgEl) {
@@ -975,7 +1101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.backgroundPosition = 'center top, center top'; // Позиционируем сверху чтобы лицо было видно
           } else {
             // Для обычных фото используем cover
-            card.style.backgroundSize = 'cover, cover';
+          card.style.backgroundSize = 'cover, cover';
             card.style.backgroundPosition = 'center center, center center';
           }
           
@@ -1087,7 +1213,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Восстанавливаем остальные карточки к нормальному размеру
         restoreOtherCards();
-        
+
         // Resume floating
         const d = Number(card.dataset.floatDuration || '5');
         card.style.animation = `cardFloatFree ${d}s ease-in-out infinite`;
