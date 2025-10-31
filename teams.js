@@ -483,9 +483,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const bgUrl = card.memberData?.image || card.memberData?.avatar || '';
         if (bgUrl) {
           const n = (card.memberData?.name || '').toLowerCase();
-          const isVertical = n.includes('croitor') || n.includes('pavel') || n.includes('daniela') || n.includes('avtenii') || n.includes('tcaciuc') || n.includes('natalia');
+          const isVertical = n.includes('daniela') || n.includes('avtenii') || n.includes('tcaciuc') || n.includes('natalia');
           card.style.background = 'none';
-          card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url(${bgUrl})`;
+          card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.25)), url(${bgUrl})`;
           card.style.backgroundSize = (isVertical ? 'contain, contain' : 'cover, cover');
           card.style.backgroundPosition = (isVertical ? 'center top, center top' : 'center center, center center');
           card.style.backgroundRepeat = 'no-repeat, no-repeat';
@@ -574,6 +574,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const members = JSON.parse(membersData);
       const theme = boxElement.getAttribute('data-theme');
       const teamId = boxElement.closest('.team-section')?.id || 'unknown';
+
+      // If this team's cards are already out (including gallery mode), close them instead of spawning new ones
+      const existingCards = flyingCards.get(teamId) || [];
+      const sectionEl = teamId !== 'unknown' ? document.getElementById(teamId) : null;
+      const galleryActive = sectionEl && sectionEl.getAttribute('data-gallery') === 'on';
+      if (existingCards.length > 0) {
+        // Turn off gallery layout first so positions restore before flying back
+        if (galleryActive) {
+          toggleGalleryLayout(teamId);
+        }
+        closeBox(boxElement);
+        return;
+      }
       
       // Soft open sound (no beeps)
       playSoftWhoosh();
@@ -596,9 +609,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       // Fly cards out
+      const totalMembers = Array.isArray(members) ? members.length : 0;
       members.forEach((member, index) => {
         setTimeout(() => {
-          createFlyingCard(member, boxCenterX, boxCenterY, theme, teamId);
+          createFlyingCard(member, boxCenterX, boxCenterY, theme, teamId, totalMembers);
         }, index * 150);
       });
       
@@ -700,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Create Flying Card
-  function createFlyingCard(member, startX, startY, theme, teamId) {
+  function createFlyingCard(member, startX, startY, theme, teamId, totalMembers) {
     const card = document.createElement('div');
     card.className = 'flying-card';
     card.style.borderColor = getThemeColor(theme);
@@ -718,29 +732,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const centerX = scrollX + viewportWidth / 2;
     const centerY = scrollY + viewportHeight / 2;
     
-    // Calculate positions for organized layout (grid)
-    const cardsPerRow = 2; // Cards per row
+    // Calculate positions for organized layout — single horizontal row at first-row level
     const cardWidth = 280;
     const cardHeight = 360;
-    const spacing = 40;
+    const spacing = 40; // compact gaps between small cards
     
     // Calculate card index in team
     const teamCards = flyingCards.get(teamId) || [];
     const cardIndex = teamCards.length;
     
-    // Calculate position in organized grid
-    const col = cardIndex % cardsPerRow;
-    const row = Math.floor(cardIndex / cardsPerRow);
+    // Force one-row layout: grow horizontally, keep row = 0
+    const dynamicPerRow = Math.max(1, cardIndex + 1);
+    const finalCount = Math.max(1, Number(totalMembers) || dynamicPerRow);
+    const col = cardIndex;
+    const row = 0;
     
     // Улучшенное центрирование - карточки симметрично относительно центра, смещены чуть левее
-    const totalGridWidth = (cardsPerRow * (cardWidth + spacing)) - spacing;
-    const gridStartX = centerX - totalGridWidth / 2 - 30; // Смещаем левее на 30px для лучшего центрирования
-    const gridStartY = centerY - cardHeight / 2 - 150; // Поднимаем карточки выше на 150px
+    // Center using current known count (cards created so far)
+    const totalGridWidth = (finalCount * (cardWidth + spacing)) - spacing;
+    const extraLeftShift = finalCount > 1 ? 40 : 0; // slightly left-shift, closer to center
+    const gridStartX = centerX - totalGridWidth / 2 - extraLeftShift;
+    const gridStartY = centerY - cardHeight / 2 - 150; // Первый ряд — базовая линия
 
     const targetX = gridStartX + col * (cardWidth + spacing);
-    const targetY = gridStartY + row * (cardHeight + 30);
+    const targetY = gridStartY; // один уровень (первый ряд)
     
-    const rotation = -5 + Math.random() * 10; // Much less rotation
+    const rotation = 0; // no tilt to avoid "book" overlap
     
     // Calculate distance from box center for animation
     const dx = targetX - centerX;
@@ -754,8 +771,8 @@ document.addEventListener('DOMContentLoaded', () => {
     card.style.setProperty('--rotation', rotation + 'deg');
     
     // Small floating values for gentle movement
-    const floatX = -10 + Math.random() * 20;
-    const floatY = -10 + Math.random() * 20;
+    const floatX = -4 + Math.random() * 8; // gentler float to reduce collisions
+    const floatY = -2 + Math.random() * 4;
     card.style.setProperty('--float-x', floatX + 'px');
     card.style.setProperty('--float-y', floatY + 'px');
     
@@ -817,12 +834,16 @@ document.addEventListener('DOMContentLoaded', () => {
       card.style.animation = `cardFloatFree ${duration}s ease-in-out infinite`;
     }, 850);
 
-    // Adjust small avatar crop for vertical photos (Pavel Croitor, Daniela Avtenii, designer)
+    // Adjust small avatar crop for known vertical photos (e.g., Daniela Avtenii, designer)
     const imgEl = card.querySelector('img');
     if (imgEl && member && typeof member.name === 'string') {
       const n = member.name.toLowerCase();
-      const isVertical = n.includes('croitor') || n.includes('pavel') || n.includes('daniela') || n.includes('avtenii') || n.includes('tcaciuc') || n.includes('natalia');
+      const isVertical = n.includes('daniela') || n.includes('avtenii') || n.includes('tcaciuc') || n.includes('natalia');
       imgEl.style.objectFit = 'cover';
+      // Slightly lift face for Pavel
+      if (n.includes('pavel') || n.includes('croitor')) {
+        imgEl.style.objectPosition = '50% 28%';
+      } else
       if (isVertical) {
         imgEl.style.objectPosition = '50% 20%'; // focus higher to show face
       } else {
@@ -1090,11 +1111,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           // Per-member epic overlays (visible, no assets) — add dynamic child once
           if ((card.dataset.teamTheme || '') === 'starwars') {
-            if (slug && slug.includes('darth-commitus') && !card.querySelector('.saber-blade')) {
-              const blade = document.createElement('div');
-              blade.className = 'saber-blade';
-              card.appendChild(blade);
-            }
+            // Removed saber blades for Pavel and Vladimir
             if (slug && slug.includes('lady-querya') && !card.querySelector('.magic-orb')) {
               const orb = document.createElement('div');
               orb.className = 'magic-orb';
@@ -1136,14 +1153,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const bgUrl = card.memberData?.image || card.memberData?.avatar || '';
         if (bgUrl) {
-          // Определяем вертикальные фото (Pavel, Daniela) для правильного background-size
+          // Определяем вертикальные фото (например, Daniela) для правильного background-size
           const memberName = (card.memberData?.name || '').toLowerCase();
-          const isVerticalPhoto = memberName.includes('croitor') || memberName.includes('pavel') || 
-                                  memberName.includes('daniela') || memberName.includes('aftenii');
+          const isVerticalPhoto = memberName.includes('daniela') || memberName.includes('aftenii');
           
           // Фон с более светлым градиентом чтобы лицо было хорошо видно
           card.style.background = 'none';
-          card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.4)), url(${bgUrl})`;
+          card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.2)), url(${bgUrl})`;
           
           // Для вертикальных фото используем другой background-size чтобы сохранить пропорции
           if (isVerticalPhoto) {
@@ -1152,8 +1168,11 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.backgroundPosition = 'center top, center top'; // Позиционируем сверху чтобы лицо было видно
           } else {
             // Для обычных фото используем cover
-          card.style.backgroundSize = 'cover, cover';
-            card.style.backgroundPosition = 'center center, center center';
+            card.style.backgroundSize = 'cover, cover';
+            // Lift a bit for Pavel to avoid head cut
+            card.style.backgroundPosition = (memberName.includes('pavel') || memberName.includes('croitor'))
+              ? 'center 20%, center 20%'
+              : 'center center, center center';
           }
           
           card.style.backgroundRepeat = 'no-repeat, no-repeat';

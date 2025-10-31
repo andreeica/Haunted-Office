@@ -43,14 +43,21 @@
 .flying-card.enlarged.anim-starwars.member-darth-commitus { animation-duration: 2s, 8s; }
 
 /* Darth Asyncus (Vladimir) — кольца асинхронности */
-.flying-card.enlarged.anim-starwars.member-darth-asyncus::after {
-  content:''; position:absolute; inset:0; pointer-events:none;
-  background:
-    radial-gradient(circle at 50% 60%, rgba(255,0,0,.18) 0 30%, transparent 31%),
-    radial-gradient(circle at 50% 60%, rgba(255,255,255,.08) 0 34%, transparent 35%);
-  animation: asyncRings 3.5s ease-in-out infinite;
+/* Darth Asyncus — blue saber instead of ring */
+.flying-card.enlarged.anim-starwars.member-darth-asyncus .saber-blade{ display:block }
+.flying-card.enlarged.anim-starwars.member-darth-asyncus .saber-blade{
+  left:78%; bottom:-12%; width:7px; height:150%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(0,170,255,0.9));
+  box-shadow: 0 0 10px rgba(0,170,255,.9), 0 0 24px rgba(0,170,255,.6);
+  animation: saberRaiseBlue 2.6s ease-in-out infinite;
 }
-@keyframes asyncRings { 0%{transform:scale(1)} 50%{transform:scale(1.05)} 100%{transform:scale(1)} }
+@keyframes saberRaiseBlue{
+  0%   { transform: rotate(-30deg) translateY(8%); opacity:0 }
+  10%  { opacity:1 }
+  45%  { transform: rotate(-12deg) translateY(-6%) }
+  60%  { transform: rotate(-20deg) translateY(-2%) }
+  100% { transform: rotate(-30deg) translateY(8%); opacity:.2 }
+}
 
 /* Darth Cacher (Arman) — вихрь */
 .flying-card.enlarged.anim-starwars.member-darth-cacher::after {
@@ -111,6 +118,90 @@
   pointer-events:none;
 }
 @keyframes infraSweep { 0%{transform:translateX(-100%)} 50%{opacity:.9} 100%{transform:translateX(100%)} }
+
+/* === MATRIX / DETECTIVE (green code + glitch) === */
+.flying-card.enlarged.anim-matrix,
+.flying-card.enlarged.anim-detective{ box-shadow:0 0 40px #00ff4188, 0 0 100px #00ff4144 }
+.flying-card.enlarged.anim-matrix::before,
+.flying-card.enlarged.anim-detective::before{
+  content:""; position:absolute; inset:-20% -10% 0 -10%; pointer-events:none;
+  background: repeating-linear-gradient(180deg, rgba(0,255,65,.1) 0 12px, transparent 13px 24px);
+  animation: codeScroll 5s linear infinite;
+}
+@keyframes codeScroll{ from{transform:translateY(-10%)} to{transform:translateY(10%)} }
+.flying-card.enlarged.anim-matrix .member-title{ text-shadow:0 0 12px #00ff41 }
+.flying-card.enlarged.anim-matrix img.spotlight{ box-shadow:0 0 30px #00ff41, 0 0 60px #00ff4188 }
+/* matrix glitch stripes overlay */
+.flying-card.enlarged.anim-matrix .glitch{display:none}
+.flying-card.enlarged.anim-matrix::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background: repeating-linear-gradient(0deg, rgba(0,255,65,.08) 0 2px, transparent 3px 6px);
+  mix-blend-mode: screen; animation: matrixGlitch 1.4s steps(8) infinite;
+}
+@keyframes matrixGlitch{ 50%{ transform: translateY(-2px) } }
+
+/* === FIXIKI (tools spin + sparks) === */
+.flying-card.enlarged.anim-fixiki{ box-shadow:0 0 40px #2aa3ff88, 0 0 100px #2aa3ff44 }
+.flying-card.enlarged.anim-fixiki::after{ content:'🔧 ⚙️ 🔨'; position:absolute; right:12px; top:12px; font-size:20px; opacity:.35; animation: toolsSpin 4s linear infinite }
+@keyframes toolsSpin { to{ transform:rotate(360deg) } }
+.flying-card.enlarged.anim-fixiki::before{ content:''; position:absolute; inset:0; background:
+  radial-gradient(circle at 20% 70%, rgba(42,163,255,.18) 0 2px, transparent 3px),
+  radial-gradient(circle at 80% 30%, rgba(42,163,255,.18) 0 2px, transparent 3px);
+  animation: fixikSpark 3s ease-in-out infinite; pointer-events:none }
+@keyframes fixikSpark { 0%,100%{ opacity:.2 } 50%{ opacity:.6 } }
+/* tool bounce near title */
+.flying-card.enlarged.anim-fixiki .member-title{ position:relative }
+.flying-card.enlarged.anim-fixiki .member-title::after{ content:'🔩'; position:absolute; right:-18px; animation: toolBounce 1.8s ease-in-out infinite }
+@keyframes toolBounce{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-6px) rotate(10deg) } }
+
+/* === MYSTICS / ORACLE (orbs + drift) === */
+.flying-card.enlarged.anim-mystics,
+.flying-card.enlarged.anim-oracle{ box-shadow:0 0 40px #9d4edd88, 0 0 100px #9d4edd44 }
+.flying-card.enlarged.anim-mystics::after,
+.flying-card.enlarged.anim-oracle::after{ content:''; position:absolute; inset:0; pointer-events:none; background:
+  radial-gradient(circle at 30% 30%, #9d4edd55 0 3px, transparent 4px),
+  radial-gradient(circle at 70% 70%, #ffb3ff55 0 3px, transparent 4px);
+  animation: mysticDrift 5s ease-in-out infinite alternate }
+/* rune ring */
+.flying-card.enlarged.anim-mystics .runes{display:none}
+.flying-card.enlarged.anim-mystics::before{ content:''; position:absolute; left:50%; top:26%; width:160px; height:160px; border-radius:50%; transform:translate(-50%,-50%); border:2px dashed rgba(157,78,221,.45); animation: runeSpin 8s linear infinite; pointer-events:none }
+@keyframes runeSpin{ to{ transform:translate(-50%,-50%) rotate(360deg) } }
+
+/* === RECRUITER (magnet pulse) === */
+.flying-card.enlarged.anim-recruiter{ box-shadow:0 0 40px #a06cd5aa, 0 0 100px #a06cd555 }
+.flying-card.enlarged.anim-recruiter::after{ content:'🧲'; position:absolute; left:12px; top:12px; font-size:20px; filter:drop-shadow(0 0 8px #a06cd5); animation: magnetPulse 2.4s ease-in-out infinite }
+@keyframes magnetPulse { 0%,100%{ transform:scale(1)} 50%{ transform:scale(1.15)} }
+/* attract ring near avatar */
+.flying-card.enlarged.anim-recruiter img.spotlight{ box-shadow:0 0 30px #a06cd5, 0 0 60px #a06cd566 }
+
+/* === MOBILE (swipe hints) === */
+.flying-card.enlarged.anim-mobile{ box-shadow:0 0 40px #00d4ff88, 0 0 100px #00d4ff44 }
+.flying-card.enlarged.anim-mobile::after{ content:'⬅️➡️'; position:absolute; bottom:10px; right:12px; font-size:16px; opacity:.35; animation: swipeHint 2s ease-in-out infinite }
+@keyframes swipeHint { 0%,100%{ transform:translateX(0)} 50%{ transform:translateX(-6px)} }
+/* tap rings on spotlight */
+.flying-card.enlarged.anim-mobile img.spotlight{ animation: kenburns 10s ease-in-out infinite alternate, tapRing 2.6s ease-in-out infinite }
+@keyframes tapRing{ 0%,100%{ box-shadow:0 0 16px #00d4ff, 0 0 32px #00d4ff66 } 50%{ box-shadow:0 0 28px #00d4ff, 0 0 64px #00d4ff99 } }
+
+/* === SPECTER / EXORCIST (ghost haze / cross sweep) === */
+.flying-card.enlarged.anim-specter{ box-shadow:0 0 40px #1f293788, 0 0 100px #1f293744 }
+.flying-card.enlarged.anim-specter::before{ content:''; position:absolute; inset:-10% -5% 0 -5%; pointer-events:none; background: radial-gradient(circle at 50% 20%, rgba(255,255,255,.12), transparent 60%); filter:blur(10px); animation: ghostHaze 6s ease-in-out infinite }
+@keyframes ghostHaze { 0%,100%{ opacity:.25; transform:translateY(0)} 50%{ opacity:.5; transform:translateY(-8px)} }
+.flying-card.enlarged.anim-exorcist::after{ content:''; position:absolute; inset:auto 0 14px 0; height:3px; background:linear-gradient(90deg,transparent,#ffffff,transparent); animation: exoSweep 1.8s ease-in-out infinite }
+@keyframes exoSweep { 0%{ transform:translateX(-100%)} 100%{ transform:translateX(100%)} }
+
+/* === ALCHEMY (bubbles) === */
+.flying-card.enlarged.anim-alchemy{ box-shadow:0 0 40px #ffaa0088, 0 0 100px #ffaa0044 }
+.flying-card.enlarged.anim-alchemy::before{ content:''; position:absolute; inset:0; background:
+  radial-gradient(circle at 20% 80%, rgba(255,170,0,.25) 0 6px, transparent 7px),
+  radial-gradient(circle at 60% 90%, rgba(255,170,0,.18) 0 4px, transparent 5px);
+  animation: bubbleRise 4s ease-in-out infinite; pointer-events:none }
+@keyframes bubbleRise { 0%{ transform:translateY(8px)} 100%{ transform:translateY(-8px)} }
+
+/* === ROYAL (crown shimmer) === */
+.flying-card.enlarged.anim-royal{ box-shadow:0 0 40px #ffd700aa, 0 0 100px #ffd70055 }
+.flying-card.enlarged.anim-royal::after{ content:'👑'; position:absolute; left:12px; top:10px; font-size:20px; animation: crownShimmer 2.2s ease-in-out infinite; filter:drop-shadow(0 0 10px #ffd700) }
+@keyframes crownShimmer { 0%,100%{ opacity:.7; transform:rotate(0)} 50%{ opacity:1; transform:rotate(-10deg)} }
+
 /* Import Google Fonts */
 * {
   margin: 0;
@@ -871,6 +962,28 @@ body.home-page .feature-icon {
   z-index: 1;
 }
 
+/* File-based background for RIDDLE INSPECTORS (QA Manual) */
+#qa-manual-team .team-background{ opacity: 1; }
+#qa-manual-team .team-background::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: center / cover no-repeat var(--bg-image, none);
+  opacity: 0.35;
+  filter: contrast(1) brightness(0.95);
+  z-index: 0;
+}
+
+/* Generic hook: allow any team-background to render custom image via --bg-image */
+.team-background::before{
+  content: "";
+  position:absolute;
+  inset:0;
+  background: center / cover no-repeat var(--bg-image, none);
+  opacity:.25;
+  z-index:0;
+}
+
 [data-bg="starwars"] {
   background: radial-gradient(circle at center, rgba(139, 0, 0, 0.3), transparent);
 }
@@ -1465,7 +1578,8 @@ body.home-page .feature-icon {
 /* Squad Pumpkin Toggle */
 .squad-pumpkin {
   position: absolute;
-  top: 10px;
+  top: auto;
+  bottom: 10px;
   right: 12px;
   width: 42px;
   height: 42px;
@@ -1604,8 +1718,8 @@ body.home-page .feature-icon {
   position:absolute; top:18%; left:50%; transform:translate(-50%,-50%);
   width:160px; height:160px; border-radius:50%;
   object-fit:cover; object-position:50% 35%;
-  box-shadow:0 0 26px currentColor, 0 0 46px rgba(255,255,255,0.25);
-  border:4px solid rgba(255,255,255,0.9);
+  box-shadow:0 0 14px rgba(255,255,255,0.35);
+  border:3px solid rgba(255,255,255,0.8);
   animation: kenburns 12s ease-in-out infinite alternate, spotlightPulse 3s ease-in-out infinite;
   z-index:3;
 }
@@ -1619,7 +1733,7 @@ body.home-page .feature-icon {
 }
 
 /* Backend specific tweaks for spotlight */
-.flying-card.enlarged.anim-starwars img.spotlight{ object-position:50% 30%; box-shadow:0 0 30px rgba(255,0,0,.6), 0 0 60px rgba(255,0,0,.25); }
+.flying-card.enlarged.anim-starwars img.spotlight{ object-position:50% 30%; box-shadow:0 0 18px rgba(255,0,0,.45), 0 0 36px rgba(255,0,0,.2); }
 .flying-card.enlarged.anim-starwars.member-darth-commitus img.spotlight{ animation-duration: 10s, 2.6s }
 .flying-card.enlarged.anim-starwars.member-lady-querya img.spotlight{ animation-duration: 12s, 3.2s }
 
@@ -1632,6 +1746,11 @@ body.home-page .feature-icon {
   transform-origin: 50% 90%;
   animation: saberRaise 2.8s ease-in-out infinite;
   pointer-events:none; z-index:2;
+}
+/* blue variant */
+.flying-card.enlarged .saber-blade.blue{
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(0,170,255,0.9));
+  box-shadow: 0 0 10px rgba(0,170,255,.9), 0 0 24px rgba(0,170,255,.6);
 }
 @keyframes saberRaise{
   0%   { transform: rotate(35deg) translateY(5%); opacity:0 }
@@ -2521,4 +2640,58 @@ body.home-page footer {
       0 0 25px rgba(255, 107, 53, 0.4);
     -webkit-text-stroke: 0.7px rgba(0, 0, 0, 0.7);
   }
+}
+
+/* Themed pumpkin styles per team */
+.team-section[data-theme="starwars"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #ff3b3b, #7a0000);
+  box-shadow: 0 0 22px rgba(255,0,0,0.75), 0 0 60px rgba(255,0,0,0.35);
+}
+.team-section[data-theme="fixiki"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #2aa0ff, #0044cc);
+  box-shadow: 0 0 22px rgba(0,102,255,0.75), 0 0 60px rgba(0,102,255,0.35);
+}
+.team-section[data-theme="detective"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #39ff14, #0c5a00);
+  box-shadow: 0 0 22px rgba(57,255,20,0.75), 0 0 60px rgba(57,255,20,0.35);
+}
+.team-section[data-theme="exorcist"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #9b59b6, #4a148c);
+  box-shadow: 0 0 22px rgba(155,89,182,0.75), 0 0 60px rgba(155,89,182,0.35);
+}
+.team-section[data-theme="specter"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #00ffd5, #007a6f);
+  box-shadow: 0 0 22px rgba(0,255,213,0.75), 0 0 60px rgba(0,255,213,0.35);
+}
+.team-section[data-theme="mobile"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #00e5ff, #006064);
+  box-shadow: 0 0 22px rgba(0,229,255,0.75), 0 0 60px rgba(0,229,255,0.35);
+}
+.team-section[data-theme="infra"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #ffd600, #8e6d00);
+  box-shadow: 0 0 22px rgba(255,214,0,0.85), 0 0 60px rgba(255,214,0,0.4);
+}
+.team-section[data-theme="royal"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #ffd54f, #b8860b);
+  box-shadow: 0 0 22px rgba(255,213,79,0.85), 0 0 60px rgba(255,213,79,0.45);
+}
+.team-section[data-theme="alchemy"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #ff9f1a, #8e3900);
+  box-shadow: 0 0 22px rgba(255,159,26,0.8), 0 0 60px rgba(255,159,26,0.4);
+}
+.team-section[data-theme="recruiter"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #ff5bbf, #9c005e);
+  box-shadow: 0 0 22px rgba(255,91,191,0.8), 0 0 60px rgba(255,91,191,0.4);
+}
+.team-section[data-theme="oracle"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #7c4dff, #3a1c99);
+  box-shadow: 0 0 22px rgba(124,77,255,0.85), 0 0 60px rgba(124,77,255,0.45);
+}
+.team-section[data-theme="mystics"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #e040fb, #7b1fa2);
+  box-shadow: 0 0 22px rgba(224,64,251,0.8), 0 0 60px rgba(224,64,251,0.4);
+}
+.team-section[data-theme="art"] .squad-pumpkin{
+  background: radial-gradient(circle at 30% 30%, #ff6ec7, #c2185b);
+  box-shadow: 0 0 22px rgba(255,110,199,0.85), 0 0 60px rgba(255,110,199,0.45);
 }
